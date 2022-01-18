@@ -23,13 +23,14 @@
 
 use std::{sync::Arc, time::Duration};
 
-use futures::prelude::*;
+use futures::{prelude::*, channel::mpsc};
 use sp_runtime::{
 	generic::BlockId,
 	traits::{Block as BlockT, HashFor},
 	Digest,
 };
 use sp_state_machine::StorageProof;
+use codec::{Encode, Decode};
 
 pub mod block_validation;
 pub mod error;
@@ -234,32 +235,37 @@ pub trait Proposer<B: BlockT> {
 ///
 /// Generally, consensus authoring work isn't undertaken while well behind
 /// the head of the chain.
-pub trait SyncOracle {
+pub trait SyncOracle<B: BlockT> {
 	/// Whether the synchronization service is undergoing major sync.
 	/// Returns true if so.
 	fn is_major_syncing(&mut self) -> bool;
 	/// Whether the synchronization service is offline.
 	/// Returns true if so.
 	fn is_offline(&mut self) -> bool;
+
+	/// ve request
+	fn ve_request(&mut self, _: VoteElectionRequest<B>);
 }
 
 /// A synchronization oracle for when there is no network.
 #[derive(Clone, Copy, Debug)]
 pub struct NoNetwork;
 
-impl SyncOracle for NoNetwork {
+impl<B: BlockT> SyncOracle<B> for NoNetwork {
 	fn is_major_syncing(&mut self) -> bool {
 		false
 	}
 	fn is_offline(&mut self) -> bool {
 		false
 	}
+
+	fn ve_request(&mut self, _: VoteElectionRequest<B>){}
 }
 
-impl<T> SyncOracle for Arc<T>
+impl<B:BlockT, T> SyncOracle<B> for Arc<T>
 where
 	T: ?Sized,
-	for<'r> &'r T: SyncOracle,
+	for<'r> &'r T: SyncOracle<B>,
 {
 	fn is_major_syncing(&mut self) -> bool {
 		<&T>::is_major_syncing(&mut &**self)
@@ -267,6 +273,10 @@ where
 
 	fn is_offline(&mut self) -> bool {
 		<&T>::is_offline(&mut &**self)
+	}
+
+	fn ve_request(&mut self, request: VoteElectionRequest<B>){
+		<&T>::ve_request(&mut &**self, request)
 	}
 }
 
@@ -332,4 +342,59 @@ impl<Block: BlockT> CanAuthorWith<Block> for NeverCanAuthor {
 pub trait SlotData {
 	/// Gets the slot duration.
 	fn slot_duration(&self) -> sp_std::time::Duration;
+}
+
+#[derive(Debug)]
+pub enum VoteElectionRequest<B: BlockT>{
+	// ConfigNewVoteRound(NumberFor<B>),
+	BuildVoteStream(mpsc::UnboundedSender<VoteData<B>>),
+	BuildElectionStream(mpsc::UnboundedSender<ElectionData<B>>),
+	// SendElectionResult(Vec<PeerId>),
+
+	// test usage
+	PropagateVote(VoteData<B>),
+	PropagateElection(ElectionData<B>),
+}
+
+#[derive(Debug, Encode, Decode, Clone)]
+pub struct VoteData<B>
+where 
+	B: BlockT,
+{
+	pub hash: B::Hash,
+	pub sig_bytes: Vec<u8>,
+	pub pub_bytes: Vec<u8>,
+}
+
+impl<B> VoteData<B>
+where
+	B: BlockT,
+{
+	pub fn new(sig_bytes: Vec<u8>, hash: B::Hash, pub_bytes: Vec<u8>)->Self{
+		Self{
+			hash,
+			sig_bytes,
+			pub_bytes,
+		}
+	}
+}
+
+#[derive(Debug, Encode, Decode)]
+pub struct ElectionData<B: BlockT>{
+	pub hash: B::Hash,
+	pub sig_bytes: Vec<u8>,
+	// pub author_list: Vec<Vec<u8>>,
+	pub vote_list: Vec<VoteData<B>>,
+	pub committee_pub_bytes: Vec<u8>,
+}
+
+impl <B:BlockT> ElectionData<B>{
+	pub fn new(hash: B::Hash, sig_bytes: Vec<u8>, vote_list: Vec<VoteData<B>>, committee_pub_bytes: Vec<u8>)->Self{
+		Self{
+			hash,
+			sig_bytes,
+			vote_list,
+			committee_pub_bytes,
+		}
+	}
 }

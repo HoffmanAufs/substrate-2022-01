@@ -263,6 +263,7 @@ pub mod light_client_requests;
 pub mod network_state;
 pub mod state_request_handler;
 pub mod transactions;
+pub mod vote_election;
 pub mod warp_request_handler;
 
 #[doc(inline)]
