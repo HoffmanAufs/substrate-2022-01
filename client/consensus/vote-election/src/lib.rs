@@ -36,6 +36,7 @@
 mod import_queue;
 mod slot_worker;
 mod slots;
+// mod finalizer;
 
 use std::{
 	convert::{TryFrom, TryInto},
@@ -69,7 +70,10 @@ use slot_worker::{
 	SlotResult, ElectionWeightInfo,
 };
 
-use sc_client_api::{backend::AuxStore, BlockOf, UsageProvider, BlockchainEvents, ImportNotifications};
+use sc_client_api::{
+	backend::{AuxStore, Backend as ClientBackend, Finalizer},
+	BlockOf, UsageProvider, BlockchainEvents, ImportNotifications
+};
 use sc_consensus::{BlockImport, BlockImportParams, ForkChoiceStrategy, StateAction};
 use sc_telemetry::{telemetry, TelemetryHandle, CONSENSUS_DEBUG, CONSENSUS_INFO, CONSENSUS_WARN};
 use sp_api::ProvideRuntimeApi;
@@ -107,7 +111,7 @@ type AuthorityId<P> = <P as Pair>::Public;
 /// Slot duration type for Aura.
 pub type SlotDuration = slot_worker::SlotDuration<sp_consensus_vote_election::SlotDuration>;
 
-const MAX_VOTE_RANK :usize = 5;
+pub const MAX_VOTE_RANK :usize = 5;
 
 /// Get type of `SlotDuration` for Aura.
 pub fn slot_duration<A, B, C>(client: &C) -> CResult<SlotDuration>
@@ -407,6 +411,44 @@ where
 		create_inherent_data_providers,
 		can_author_with,
 	))
+}
+
+pub async fn run_simple_finalizer<A, B, C, CB, P>(client: Arc<C>)
+where
+    A: Codec + Debug,
+    B: BlockT,
+	CB: ClientBackend<B>,
+    C: BlockchainEvents<B> + Finalizer<B, CB> + ProvideRuntimeApi<B> + BlockOf + Sync,
+	C::Api: AuraApi<B, A>,
+	P: Pair + Send + Sync,
+	P::Signature: TryFrom<Vec<u8>> + Member + Encode + Decode + Hash + Debug,
+{
+	let mut imported_blocks_stream = client.import_notification_stream();
+
+    loop{
+        if let Some(block)= imported_blocks_stream.next().await{
+
+            // min_election_weight: authority_len, MAX_VOTE_RANK
+            if let Ok(committee_vec) = authorities(client.as_ref(), &BlockId::Hash(block.hash)){
+                let min_election_weight = caculate_min_election_weight(committee_vec.len(), MAX_VOTE_RANK);
+
+				if let Ok(weight) = caculate_block_weight::<A, B, P::Signature, C>(&block.header, client.as_ref()){
+					if weight <= min_election_weight{
+						match client.finalize_block(BlockId::Hash(block.hash), None, true){
+							Err(e) => {
+								log::warn!("Failed to finalize block {:?}", e);
+								// rpc::send_result(&mut sender, Err(e.into()))
+							},
+							Ok(()) => {
+								log::info!("✅ Successfully finalized block: {}", block.hash);
+								// rpc::send_result(&mut sender, Ok(()))
+							},
+						}
+					}
+				}
+            }
+        }
+    }
 }
 
 /// Parameters of [`build_aura_worker`].
@@ -1066,7 +1108,7 @@ fn caculate_min_max_election_weight(committee_count: usize, max_vote_rank: usize
 	(min_value, max_value)
 }
 
-fn caculate_min_election_weight(committee_count: usize, max_vote_rank: usize)->u64{
+pub fn caculate_min_election_weight(committee_count: usize, max_vote_rank: usize)->u64{
 	let half_count = committee_count/2+1;
 	let mut ret = 1;
 
@@ -1094,8 +1136,51 @@ fn aura_err<B: BlockT>(error: Error<B>) -> Error<B> {
 	error
 }
 
+pub fn caculate_block_weight<A, B, S, C>(header: &B::Header, client: &C)->Result<u64, Error<B>>
+where
+	A: Codec + Debug,
+	B: BlockT,
+	S: Codec,
+	C: ProvideRuntimeApi<B> + BlockOf,
+	C::Api: AuraApi<B, A>,
+{
+	if let Ok(committee_vec) = authorities(client, &BlockId::Hash(header.hash())){
+		let committee_count = committee_vec.len();
+
+		if let Ok(pre_digest) = find_pre_digest::<B, S>(header){
+			let pub_bytes = pre_digest.pub_bytes;
+			let mut rank_vec = vec![];
+			if let Ok(election_vec) = <Vec<ElectionData<B>> as Decode>::decode(&mut pre_digest.election_bytes.as_slice()){
+				for election in election_vec.iter(){
+					let rank = match election.vote_list.iter().position(|vote|vote.pub_bytes == pub_bytes){
+						Some(x)=>x,
+						None => MAX_VOTE_RANK,
+					};
+					rank_vec.push(rank);
+				}
+
+				while rank_vec.len() < committee_count{
+					rank_vec.push(MAX_VOTE_RANK);
+				}
+
+				let block_election_weight = caculate_election_weight_value(&rank_vec, MAX_VOTE_RANK);
+				Ok(block_election_weight)
+			}
+			else{
+				Err(Error::ElectionDataDecodeFailed)
+			}
+		}
+		else{
+			Err(Error::NoDigestFound)
+		}
+	}
+	else{
+		Err(Error::NoCommitteeFound)
+	}
+}
+
 #[derive(derive_more::Display, Debug)]
-enum Error<B: BlockT> {
+pub enum Error<B: BlockT> {
 	#[display(fmt = "Multiple Aura pre-runtime headers")]
 	MultipleHeaders,
 	#[display(fmt = "No Aura pre-runtime digest found")]
@@ -1104,6 +1189,8 @@ enum Error<B: BlockT> {
 	NoElectionDataFound,
 	#[display(fmt = "Election data decode failed")]
 	ElectionDataDecodeFailed,
+	#[display(fmt = "get committee member failed")]
+	NoCommitteeFound,
 	#[display(fmt = "Header {:?} is unsealed", _0)]
 	HeaderUnsealed(B::Hash),
 	#[display(fmt = "Header {:?} has a bad seal", _0)]
@@ -1126,7 +1213,7 @@ impl<B: BlockT> std::convert::From<Error<B>> for String {
 	}
 }
 
-fn find_pre_digest<B: BlockT, Signature: Codec>(header: &B::Header) -> Result<PreDigest, Error<B>> {
+pub fn find_pre_digest<B: BlockT, Signature: Codec>(header: &B::Header) -> Result<PreDigest, Error<B>> {
 	if header.number().is_zero() {
 		return Ok(PreDigest{
 			// authority_index: 0u32,
@@ -1150,7 +1237,7 @@ fn find_pre_digest<B: BlockT, Signature: Codec>(header: &B::Header) -> Result<Pr
 	pre_digest.ok_or_else(|| aura_err(Error::NoDigestFound))
 }
 
-fn authorities<A, B, C>(client: &C, at: &BlockId<B>) -> Result<Vec<A>, ConsensusError>
+pub fn authorities<A, B, C>(client: &C, at: &BlockId<B>) -> Result<Vec<A>, ConsensusError>
 where
 	A: Codec + Debug,
 	B: BlockT,

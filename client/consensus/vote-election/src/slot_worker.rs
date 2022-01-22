@@ -31,7 +31,7 @@ pub use crate::{
 };
 use crate::slots::Slots;
 
-use codec::{Decode, Encode};
+use codec::{Codec, Decode, Encode};
 
 // use rand::Rng;
 use futures::{future::Either, Future, TryFutureExt, channel::mpsc, FutureExt};
@@ -45,6 +45,7 @@ use sp_api::{ApiRef, ProvideRuntimeApi};
 use sp_arithmetic::traits::BaseArithmetic;
 use sp_consensus::{CanAuthorWith, Proposer, SelectChain, SlotData, SyncOracle,
 	VoteElectionRequest, VoteData, ElectionData};
+// pub use sp_consensus_vote_election::{ AuraApi};
 use sp_consensus_slots::Slot;
 use sp_inherents::{CreateInherentDataProviders, InherentDataProvider};
 use sp_runtime::{
@@ -57,7 +58,10 @@ use std::{fmt::Debug, ops::Deref, time::{Duration, SystemTime }, sync::Arc};
 use std::collections::{BTreeMap, HashMap};
 use num_bigint::BigUint;
 
-use sc_client_api::{BlockchainEvents, ImportNotifications, BlockOf};
+use sc_client_api::{
+	BlockchainEvents, ImportNotifications, BlockOf,
+	backend::{Backend as ClientBackend, Finalizer},
+};
 
 /// The changes that need to applied to the storage to create the state for a block.
 ///
@@ -1234,8 +1238,8 @@ pub enum Error<T>
 where
 	T: Debug,
 {
-	// #[error("Slot duration is invalid: {0:?}")]
-	// SlotDurationInvalid(SlotDuration<T>),
+	#[error("Slot duration is invalid: {0:?}")]
+	SlotDurationInvalid(SlotDuration<T>),
 }
 
 /// A slot duration. Create with [`get_or_compute`](Self::get_or_compute).
