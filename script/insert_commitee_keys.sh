@@ -49,121 +49,121 @@
 --password 123456 \
 --key-type gran 
 
-# # 节点4
-# # 将aura 和 grandpa key添加到对应节点里面
-# ./target/debug/node-template key insert \
-# --base-path ./tmp/C04 \
-# --chain ./tmp/RawAuraSpec.json \
-# --scheme Sr25519 \
-# --suri \
-# --password 123456 \
-# --key-type aura;\
-# ./target/debug/node-template key insert \
-# --base-path ./tmp/C04 \
-# --chain ./tmp/RawAuraSpec.json \
-# --scheme Sr25519 \
-# --suri \
-# --password 123456 \
-# --key-type gran 
+# 节点4
+# 将aura 和 grandpa key添加到对应节点里面
+./target/debug/node-template key insert \
+--base-path ./tmp/C04 \
+--chain ./tmp/RawAuraSpec.json \
+--scheme Sr25519 \
+--suri 0x0a7c1ab47570a2ddb6d40b8bffa1d64c54b38adfb48590a25f7dcb4d927034fd \
+--password 123456 \
+--key-type aura;\
+./target/debug/node-template key insert \
+--base-path ./tmp/C04 \
+--chain ./tmp/RawAuraSpec.json \
+--scheme Sr25519 \
+--suri 0x0a7c1ab47570a2ddb6d40b8bffa1d64c54b38adfb48590a25f7dcb4d927034fd \
+--password 123456 \
+--key-type gran 
 
-# # 节点5
-# # 将aura 和 grandpa key添加到对应节点里面
-# ./target/debug/node-template key insert \
-# --base-path ./tmp/C05 \
-# --chain ./tmp/RawAuraSpec.json \
-# --scheme Sr25519 \
-# --suri \
-# --password 123456 \
-# --key-type aura;\
-# ./target/debug/node-template key insert \
-# --base-path ./tmp/C05 \
-# --chain ./tmp/RawAuraSpec.json \
-# --scheme Sr25519 \
-# --suri \
-# --password 123456 \
-# --key-type gran 
+# 节点5
+# 将aura 和 grandpa key添加到对应节点里面
+./target/debug/node-template key insert \
+--base-path ./tmp/C05 \
+--chain ./tmp/RawAuraSpec.json \
+--scheme Sr25519 \
+--suri 0x02340296091e3243b96824a99a630381cd0bf16326d90a7ff3379a71d4a72fb1 \
+--password 123456 \
+--key-type aura;\
+./target/debug/node-template key insert \
+--base-path ./tmp/C05 \
+--chain ./tmp/RawAuraSpec.json \
+--scheme Sr25519 \
+--suri 0x02340296091e3243b96824a99a630381cd0bf16326d90a7ff3379a71d4a72fb1 \
+--password 123456 \
+--key-type gran 
 
-# # 节点6
-# # 将aura 和 grandpa key添加到对应节点里面
-# ./target/debug/node-template key insert \
-# --base-path ./tmp/C06 \
-# --chain ./tmp/RawAuraSpec.json \
-# --scheme Sr25519 \
-# --suri  \
-# --password 123456 \
-# --key-type aura;\
-# ./target/debug/node-template key insert \
-# --base-path ./tmp/C06 \
-# --chain ./tmp/RawAuraSpec.json \
-# --scheme Sr25519 \
-# --suri  \
-# --password 123456 \
-# --key-type gran 
+# 节点6
+# 将aura 和 grandpa key添加到对应节点里面
+./target/debug/node-template key insert \
+--base-path ./tmp/C06 \
+--chain ./tmp/RawAuraSpec.json \
+--scheme Sr25519 \
+--suri 0x78589be680b825bbc829f546db4c2856d8d267293344cc4a62ecd4d281908ac3 \
+--password 123456 \
+--key-type aura;\
+./target/debug/node-template key insert \
+--base-path ./tmp/C06 \
+--chain ./tmp/RawAuraSpec.json \
+--scheme Sr25519 \
+--suri 0x78589be680b825bbc829f546db4c2856d8d267293344cc4a62ecd4d281908ac3 \
+--password 123456 \
+--key-type gran 
 
-# # 节点7
-# # 将aura 和 grandpa key添加到对应节点里面
-# ./target/debug/node-template key insert \
-# --base-path ./tmp/C07 \
-# --chain ./tmp/RawAuraSpec.json \
-# --scheme Sr25519 \
-# --suri  \
-# --password 123456 \
-# --key-type aura;\
-# ./target/debug/node-template key insert \
-# --base-path ./tmp/C07 \
-# --chain ./tmp/RawAuraSpec.json \
-# --scheme Sr25519 \
-# --suri  \
-# --password 123456 \
-# --key-type gran 
+# 节点7
+# 将aura 和 grandpa key添加到对应节点里面
+./target/debug/node-template key insert \
+--base-path ./tmp/C07 \
+--chain ./tmp/RawAuraSpec.json \
+--scheme Sr25519 \
+--suri 0x89efbc31ab5997e5a9546aa5744e072b8ac539ef92755b13af5e4f413b409b7d \
+--password 123456 \
+--key-type aura;\
+./target/debug/node-template key insert \
+--base-path ./tmp/C07 \
+--chain ./tmp/RawAuraSpec.json \
+--scheme Sr25519 \
+--suri 0x89efbc31ab5997e5a9546aa5744e072b8ac539ef92755b13af5e4f413b409b7d \
+--password 123456 \
+--key-type gran 
 
-# # 节点8
-# # 将aura 和 grandpa key添加到对应节点里面
-# ./target/debug/node-template key insert \
-# --base-path ./tmp/C08 \
-# --chain ./tmp/RawAuraSpec.json \
-# --scheme Sr25519 \
-# --suri  \
-# --password 123456 \
-# --key-type aura;\
-# ./target/debug/node-template key insert \
-# --base-path ./tmp/C08 \
-# --chain ./tmp/RawAuraSpec.json \
-# --scheme Sr25519 \
-# --suri  \
-# --password 123456 \
-# --key-type gran 
+# 节点8
+# 将aura 和 grandpa key添加到对应节点里面
+./target/debug/node-template key insert \
+--base-path ./tmp/C08 \
+--chain ./tmp/RawAuraSpec.json \
+--scheme Sr25519 \
+--suri 0xbfef9d899e39f83ec789eb552e4db5dfa8fb72a6b6dbedbbaa7592681fdfca4a \
+--password 123456 \
+--key-type aura;\
+./target/debug/node-template key insert \
+--base-path ./tmp/C08 \
+--chain ./tmp/RawAuraSpec.json \
+--scheme Sr25519 \
+--suri 0xbfef9d899e39f83ec789eb552e4db5dfa8fb72a6b6dbedbbaa7592681fdfca4a \
+--password 123456 \
+--key-type gran 
 
-# # 节点9
-# # 将aura 和 grandpa key添加到对应节点里面
-# ./target/debug/node-template key insert \
-# --base-path ./tmp/C09 \
-# --chain ./tmp/RawAuraSpec.json \
-# --scheme Sr25519 \
-# --suri  \
-# --password 123456 \
-# --key-type aura;\
-# ./target/debug/node-template key insert \
-# --base-path ./tmp/C09 \
-# --chain ./tmp/RawAuraSpec.json \
-# --scheme Sr25519 \
-# --suri  \
-# --password 123456 \
-# --key-type gran 
+# 节点9
+# 将aura 和 grandpa key添加到对应节点里面
+./target/debug/node-template key insert \
+--base-path ./tmp/C09 \
+--chain ./tmp/RawAuraSpec.json \
+--scheme Sr25519 \
+--suri 0x3ade619f2eb08ddea422358ee2e16e9e90726513bfb7d63f040d6e1ec54e3849 \
+--password 123456 \
+--key-type aura;\
+./target/debug/node-template key insert \
+--base-path ./tmp/C09 \
+--chain ./tmp/RawAuraSpec.json \
+--scheme Sr25519 \
+--suri 0x3ade619f2eb08ddea422358ee2e16e9e90726513bfb7d63f040d6e1ec54e3849 \
+--password 123456 \
+--key-type gran 
 
-# # 节点10
-# # 将aura 和 grandpa key添加到对应节点里面
-# ./target/debug/node-template key insert \
-# --base-path ./tmp/C10 \
-# --chain ./tmp/RawAuraSpec.json \
-# --scheme Sr25519 \
-# --suri  \
-# --password 123456 \
-# --key-type aura;\
-# ./target/debug/node-template key insert \
-# --base-path ./tmp/C10 \
-# --chain ./tmp/RawAuraSpec.json \
-# --scheme Sr25519 \
-# --suri  \
-# --password 123456 \
-# --key-type gran 
+# 节点10
+# 将aura 和 grandpa key添加到对应节点里面
+./target/debug/node-template key insert \
+--base-path ./tmp/C10 \
+--chain ./tmp/RawAuraSpec.json \
+--scheme Sr25519 \
+--suri 0x856a4b72587ae954b2cd4520101cfb5c99b9c7e7d8a00c641473201178d3679f \
+--password 123456 \
+--key-type aura;\
+./target/debug/node-template key insert \
+--base-path ./tmp/C10 \
+--chain ./tmp/RawAuraSpec.json \
+--scheme Sr25519 \
+--suri 0x856a4b72587ae954b2cd4520101cfb5c99b9c7e7d8a00c641473201178d3679f \
+--password 123456 \
+--key-type gran 
