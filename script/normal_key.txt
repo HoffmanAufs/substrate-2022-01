@@ -1,0 +1,139 @@
+Secret phrase:       ugly among differ stadium spot tongue leisure sword increase card scissors lab
+  Secret seed:       0x3496dd931e8a69d69f0a9c30e4d8fbc028917d2b2a707789d8fdf9b74710e739
+  Public key (hex):  0x9c55e938b2588a1aed7754fe211db82277cf70cd3c2ed53bac819c49c63d322f
+  Account ID:        0x9c55e938b2588a1aed7754fe211db82277cf70cd3c2ed53bac819c49c63d322f
+  Public key (SS58): 5Fbgr9BvqXiJrW5g5jLQP3YvSzJUkB9LWrHijqQaNpTzc1kK
+  SS58 Address:      5Fbgr9BvqXiJrW5g5jLQP3YvSzJUkB9LWrHijqQaNpTzc1kK
+
+Secret phrase:       because near spider elite surprise chase modify repair slush color mule hello
+  Secret seed:       0x0156a104d8df29d1e1fbc8fc51df487f0d1dfc2be7019e43d7955c8431c6863c
+  Public key (hex):  0x022f62ed01ef2d103492455ad9688d5a5a4eb6e31e66214c79680fe1d926ac38
+  Account ID:        0x022f62ed01ef2d103492455ad9688d5a5a4eb6e31e66214c79680fe1d926ac38
+  Public key (SS58): 5C7a2fxgP3o8dvfehYhcn3DWdKwEMpThWGD1YAzTtS7saPXT
+  SS58 Address:      5C7a2fxgP3o8dvfehYhcn3DWdKwEMpThWGD1YAzTtS7saPXT
+
+Secret phrase:       royal census because short bleak duty refuse foster argue process venue share
+  Secret seed:       0x39d914d4a9170098e90031f3155984d6518360adc548104f1dfe5bd1c89284ee
+  Public key (hex):  0xdab5c8ffc784c14b7e2d662c5fd11e8b34cdf4f0d92d77a30d69abaa25205b6e
+  Account ID:        0xdab5c8ffc784c14b7e2d662c5fd11e8b34cdf4f0d92d77a30d69abaa25205b6e
+  Public key (SS58): 5H1UJD2iQmBSRdKRbWBhk81CbRmVHyCv6gW4A1UX7KXz1ZSq
+  SS58 Address:      5H1UJD2iQmBSRdKRbWBhk81CbRmVHyCv6gW4A1UX7KXz1ZSq
+
+Secret phrase:       stay tourist nation stool describe bring clerk sell horror swarm better rib
+  Secret seed:       0xcc2f38bdc303cb3acdb36611dc5ca12719ed813d382601405eea6f3ddcdd5019
+  Public key (hex):  0xba679ce2df180361f2967820ffb2e5b19ad4d74cdefac8fc923791b588682e31
+  Account ID:        0xba679ce2df180361f2967820ffb2e5b19ad4d74cdefac8fc923791b588682e31
+  Public key (SS58): 5GH7YTS8ENHuUBBUqf4oA5wxVqj1kRPgYSzHSLtJv8TxKYBV
+  SS58 Address:      5GH7YTS8ENHuUBBUqf4oA5wxVqj1kRPgYSzHSLtJv8TxKYBV
+
+Secret phrase:       wasp tent buffalo security cluster certain notable obscure erosion inch benefit drastic
+  Secret seed:       0xaa07d103d6f9885a17091aadcad5bd0ff21acbb107d354eaceafbe0cab4146ea
+  Public key (hex):  0x981912fa27672c63cef3a467b3121e9f85f184a8c24c7048303ea4c387a7df07
+  Account ID:        0x981912fa27672c63cef3a467b3121e9f85f184a8c24c7048303ea4c387a7df07
+  Public key (SS58): 5FW8aqXcH7svUy2V5CtArJRdmcSLPxSPu9EiLL8gggufsjdE
+  SS58 Address:      5FW8aqXcH7svUy2V5CtArJRdmcSLPxSPu9EiLL8gggufsjdE
+
+Secret phrase:       desert border little prefer hamster tool inform dose spray radio mesh unveil
+  Secret seed:       0xebcc9a0574b36c72673db92e0d1801dec67ffaaed4e52818faf283a3b34bae3c
+  Public key (hex):  0x3621f985eb8525ccf4bdb3d90ab590535e987accc16dc359f014563bb0168d35
+  Account ID:        0x3621f985eb8525ccf4bdb3d90ab590535e987accc16dc359f014563bb0168d35
+  Public key (SS58): 5DHgY1mfeq4pFc9GxzURrZCDe3TrND1Ad3NRdRdgmytyCUyh
+  SS58 Address:      5DHgY1mfeq4pFc9GxzURrZCDe3TrND1Ad3NRdRdgmytyCUyh
+
+Secret phrase:       bean cart upon inch east settle ranch glory trophy minimum fever health
+  Secret seed:       0x3b7b8fa964e9e4f171566c59a59b4b85b1655e350daf3edd6520c1ded60b75e0
+  Public key (hex):  0xf4e46a1020086d01280edc8162dab9e8ce8a06c1977423f99a29ee9d10b6f879
+  Account ID:        0xf4e46a1020086d01280edc8162dab9e8ce8a06c1977423f99a29ee9d10b6f879
+  Public key (SS58): 5HboPpWkZ6EXkn1J6WBzgYv71AFe3ZKd7b3zD6KhRKmQ5z7m
+  SS58 Address:      5HboPpWkZ6EXkn1J6WBzgYv71AFe3ZKd7b3zD6KhRKmQ5z7m
+
+Secret phrase:       thrive slow all dish energy joy install apology frost mosquito bitter swarm
+  Secret seed:       0x2f53e826c94bbf5b26c4596bff165c4b3cd974ae3590a325868295e68b4555ff
+  Public key (hex):  0xe88328726dc8eb096e64874f8e50a5f7aaffd2980bc63438c959567ef1bc4e1f
+  Account ID:        0xe88328726dc8eb096e64874f8e50a5f7aaffd2980bc63438c959567ef1bc4e1f
+  Public key (SS58): 5HKZvoeGTpJa7GzVhmiyrDXQHeApdoYZWnDrCL4WpixYH44K
+  SS58 Address:      5HKZvoeGTpJa7GzVhmiyrDXQHeApdoYZWnDrCL4WpixYH44K
+
+Secret phrase:       ceiling truth donkey flip diet goddess wear country subway ice main brown
+  Secret seed:       0x8af8efeed50d75c9684c3175c887bcaf700eab89ee28053bfad8af80487076a7
+  Public key (hex):  0x26a0ee19316aca50b8f10882650acd6ff5d4bf0de4073f60fe978d98cf276f36
+  Account ID:        0x26a0ee19316aca50b8f10882650acd6ff5d4bf0de4073f60fe978d98cf276f36
+  Public key (SS58): 5CwMUy41HkNYjoJSPesGnF4fJp6yVXcHxxQmXbpJTY77N3Xt
+  SS58 Address:      5CwMUy41HkNYjoJSPesGnF4fJp6yVXcHxxQmXbpJTY77N3Xt
+
+Secret phrase:       atom stereo object dial broken enemy filter rocket stable resource never peasant
+  Secret seed:       0x31785588f6b8bf138d8dd9fdaa67a1d59d98db84a5d18d47514624e898aec913
+  Public key (hex):  0xa666699d4488199fd80bcc3129aa00f848a911d2cb721972effe27bd0d4f8c71
+  Account ID:        0xa666699d4488199fd80bcc3129aa00f848a911d2cb721972effe27bd0d4f8c71
+  Public key (SS58): 5FptEEHo3iTAbyTeE1uCSbvKAuZ9cHxS32n7BdZ72WDhsKQ1
+  SS58 Address:      5FptEEHo3iTAbyTeE1uCSbvKAuZ9cHxS32n7BdZ72WDhsKQ1
+  
+Secret phrase:       effort mobile ticket hazard observe pizza unveil install rocket what cute trumpet
+  Secret seed:       0x3a3df331300c030bd975ed1058ad9dd7016080188787a8ddbb286c7fff4cea03
+  Public key (hex):  0xda243853e2253779a9f97d52c69c665cef9b5b209b221da9f35a59fec3ef5716
+  Account ID:        0xda243853e2253779a9f97d52c69c665cef9b5b209b221da9f35a59fec3ef5716
+  Public key (SS58): 5Gzj4BNErfR3ahXXTr3xHpVk2aCWPbsPE2JCg48WxT6nimZ2
+  SS58 Address:      5Gzj4BNErfR3ahXXTr3xHpVk2aCWPbsPE2JCg48WxT6nimZ2
+  
+Secret phrase:       despair buyer brief exile hub oppose skill increase food slow good find
+  Secret seed:       0x6cd4e841b2da00416521348047b6739f81caeedf870a845849a5cd9a3e55096a
+  Public key (hex):  0xdac50c5bc86630cf6a2a26fbefd3b65c785f2f7c726a7f4f78d5cb46e7a5c36f
+  Account ID:        0xdac50c5bc86630cf6a2a26fbefd3b65c785f2f7c726a7f4f78d5cb46e7a5c36f
+  Public key (SS58): 5H1YqBixXmWB8RYhZB8364ATKUwAyZUFoQBeX2N8a9XU3MiC
+  SS58 Address:      5H1YqBixXmWB8RYhZB8364ATKUwAyZUFoQBeX2N8a9XU3MiC
+  
+Secret phrase:       ocean census ranch uphold coffee kangaroo evolve material invest okay choice wear
+  Secret seed:       0xbf7eccb25d501f9922bc6a76979869fc40923eea34d393c8fb7815f4e41d0aca
+  Public key (hex):  0x1adfdac55107d5e0a1fe769b3ad0fa233a169a49f46afe4da260171437081f00
+  Account ID:        0x1adfdac55107d5e0a1fe769b3ad0fa233a169a49f46afe4da260171437081f00
+  Public key (SS58): 5CfwboYryXLbnEKMPN68BXXwzHYVyKy7Af8FL3QWGvGGsxUd
+  SS58 Address:      5CfwboYryXLbnEKMPN68BXXwzHYVyKy7Af8FL3QWGvGGsxUd
+
+Secret phrase:       space sleep heavy jazz save forest mushroom rural wolf ordinary sample report
+  Secret seed:       0x5ba01e156f4ad65299142929c62419a8984295c4a5407906506d99a1c9430e1a
+  Public key (hex):  0xd4de86b0724d8b09feeed750227a835bda2e59e0c082be5b5de8a1f602fb6310
+  Account ID:        0xd4de86b0724d8b09feeed750227a835bda2e59e0c082be5b5de8a1f602fb6310
+  Public key (SS58): 5Gsp7VfZGV7vDD31tE475XrXR89VMNj3kxDFUqS7cFE1De5H
+  SS58 Address:      5Gsp7VfZGV7vDD31tE475XrXR89VMNj3kxDFUqS7cFE1De5H
+
+Secret phrase:       collect cloud photo shoot dial hurt word science cycle essence shield shell
+  Secret seed:       0x07b7427313530a39429f98287dd747be2446b2f6b80098020e0fb8854658d47f
+  Public key (hex):  0xf8949fcf9614e18e3051f4ca9157b221b5b99bfc965a58903846c1f2b18b9278
+  Account ID:        0xf8949fcf9614e18e3051f4ca9157b221b5b99bfc965a58903846c1f2b18b9278
+  Public key (SS58): 5HgdtBKZUPaxEDx6ty6QsDxsqCzjnWML7NKT6SesYrDT1C32
+  SS58 Address:      5HgdtBKZUPaxEDx6ty6QsDxsqCzjnWML7NKT6SesYrDT1C32
+
+Secret phrase:       labor okay lens rent window unusual oven endorse steak walnut salmon verb
+  Secret seed:       0x5859b5e788c0df179e64ba64659ed1d2b1c6ce9df4754f1add92b17a68001df9
+  Public key (hex):  0x981298a34be6e0171b831aa448340f56cf1c740cd2103ad6c8f5fd705dae7761
+  Account ID:        0x981298a34be6e0171b831aa448340f56cf1c740cd2103ad6c8f5fd705dae7761
+  Public key (SS58): 5FW6fE4q35RDqRdHG8i6RKrLuuHfmYUBK43XBXugg715HXbg
+  SS58 Address:      5FW6fE4q35RDqRdHG8i6RKrLuuHfmYUBK43XBXugg715HXbg
+  
+Secret phrase:       people beef baby license cushion victory tell film jungle echo vendor daring
+  Secret seed:       0xd1e64f74a90486aac3c5e90fb21309e06b43297cb19358ad5cb9692c1c821337
+  Public key (hex):  0xa2b435cbc314f81aff61fc91ff863c2a688dbfae9dfcaeceab96d511ffd9654b
+  Account ID:        0xa2b435cbc314f81aff61fc91ff863c2a688dbfae9dfcaeceab96d511ffd9654b
+  Public key (SS58): 5Fk39YP6pqLor1ES51XiFN342sX4sf7eUeQKf9dH5HvRvkDu
+  SS58 Address:      5Fk39YP6pqLor1ES51XiFN342sX4sf7eUeQKf9dH5HvRvkDu
+  
+Secret phrase:       shed just woman original utility safe degree wasp undo pistol lock general
+  Secret seed:       0x8a9e32b8f1692c58d88d7dab3d4740cf2eadd353bb0825a9a92571a8045eeb1b
+  Public key (hex):  0x1e068f47d85d1f94383453ab39685bf093c259259eb235b54e9a044b29b72348
+  Account ID:        0x1e068f47d85d1f94383453ab39685bf093c259259eb235b54e9a044b29b72348
+  Public key (SS58): 5Ck5F1UQwHFUhXWxStggZYvwEyevo4bZ657WNi8RHPgGhsPE
+  SS58 Address:      5Ck5F1UQwHFUhXWxStggZYvwEyevo4bZ657WNi8RHPgGhsPE
+
+Secret phrase:       smooth grace fire wrestle anchor home panel demand cave tourist finish metal
+  Secret seed:       0x47254bf2df2e6a64c1d070af6d016e581fc2be1de1d7aec89e032ee8ac5b54fc
+  Public key (hex):  0xb23268e045a7d4c6777d15664a46831d018db79514a476e845a2a7658de80708
+  Account ID:        0xb23268e045a7d4c6777d15664a46831d018db79514a476e845a2a7658de80708
+  Public key (SS58): 5G6MMZwwRpLapLnE9J7qXABZRyF5TJbEDjTgqmMtWACybTnK
+  SS58 Address:      5G6MMZwwRpLapLnE9J7qXABZRyF5TJbEDjTgqmMtWACybTnK
+  
+Secret phrase:       rhythm program dwarf cage absorb regular person basic wage bread dial paper
+  Secret seed:       0x31d6c2f7900c79d2cab3d2bc4afc01da2628a46aa1427145227cf9bd57b859e7
+  Public key (hex):  0x4801c3eb44adb15c121e820fc42340a575fabec85f6f171851b9231eb4454d3e
+  Account ID:        0x4801c3eb44adb15c121e820fc42340a575fabec85f6f171851b9231eb4454d3e
+  Public key (SS58): 5Dh7q3uGnudpz5R3Q57w6rWHvKJNgLYhopsXpPkSQpZ9u8BW
+  SS58 Address:      5Dh7q3uGnudpz5R3Q57w6rWHvKJNgLYhopsXpPkSQpZ9u8BW

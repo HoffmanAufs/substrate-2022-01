@@ -1,0 +1,10 @@
+./target/release/subkey generate --scheme Sr25519 --password 123456
+./target/release/subkey generate --scheme Sr25519 --password 123456
+./target/release/subkey generate --scheme Sr25519 --password 123456
+./target/release/subkey generate --scheme Sr25519 --password 123456
+./target/release/subkey generate --scheme Sr25519 --password 123456
+./target/release/subkey generate --scheme Sr25519 --password 123456
+./target/release/subkey generate --scheme Sr25519 --password 123456
+./target/release/subkey generate --scheme Sr25519 --password 123456
+./target/release/subkey generate --scheme Sr25519 --password 123456
+./target/release/subkey generate --scheme Sr25519 --password 123456

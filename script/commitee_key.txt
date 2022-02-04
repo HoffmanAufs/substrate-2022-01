@@ -1,0 +1,196 @@
+Secret phrase:       lawn rookie choice three ripple casino clarify filter ecology jacket enact public
+  Secret seed:       0x019216df060179fab7ae75981f7c875fb75eb47e6ff89bcf112d8e3b8ccefa75
+  Public key (hex):  0xfeedb128998041a0e056ceedce22d2fcdb3efcb2cb2f1af72bbd436f15dda44c
+  Account ID:        0xfeedb128998041a0e056ceedce22d2fcdb3efcb2cb2f1af72bbd436f15dda44c
+  Public key (SS58): 5HpxdSjV2j5uedrXjSRjctJXBPwaE1h22o2jqcMi4cT7MpNA
+  SS58 Address:      5HpxdSjV2j5uedrXjSRjctJXBPwaE1h22o2jqcMi4cT7MpNA
+Secret Key URI `0x019216df060179fab7ae75981f7c875fb75eb47e6ff89bcf112d8e3b8ccefa75` is account:
+  Secret seed:       0x019216df060179fab7ae75981f7c875fb75eb47e6ff89bcf112d8e3b8ccefa75
+  Public key (hex):  0xe4379f9c612028f73518786cb9183e9a25759ecbe9cf7d6c4a26a03b42438485
+  Account ID:        0xe4379f9c612028f73518786cb9183e9a25759ecbe9cf7d6c4a26a03b42438485
+  Public key (SS58): 5HDwJGQCGkWdKAV2VbJA8S4JM8AQZkJxe3oHj2epgGytqyV2
+  SS58 Address:      5HDwJGQCGkWdKAV2VbJA8S4JM8AQZkJxe3oHj2epgGytqyV2
+  
+Secret phrase:       shock protect garage mystery tattoo below mad admit style social crime deer
+  Secret seed:       0xc07b5fa178d06e545049f117d94633e576271202b6e03665d935b9d89c5055c6
+  Public key (hex):  0x2a8817cc5df1ae8a95863e9415fa1c48c2ae8fc4ec26506ab6a9beab70941605
+  Account ID:        0x2a8817cc5df1ae8a95863e9415fa1c48c2ae8fc4ec26506ab6a9beab70941605
+  Public key (SS58): 5D2UJ9FSUPBHbY1QvAbNkoMvaVckq6k2sGS33gmVGd5dxYQX
+  SS58 Address:      5D2UJ9FSUPBHbY1QvAbNkoMvaVckq6k2sGS33gmVGd5dxYQX
+Secret Key URI `0xc07b5fa178d06e545049f117d94633e576271202b6e03665d935b9d89c5055c6` is account:
+  Secret seed:       0xc07b5fa178d06e545049f117d94633e576271202b6e03665d935b9d89c5055c6
+  Public key (hex):  0x80a8068d5620d808547a8eb2f18fbb2c1c5e3d5e998b7cbf7a4910ab6297d6b7
+  Account ID:        0x80a8068d5620d808547a8eb2f18fbb2c1c5e3d5e998b7cbf7a4910ab6297d6b7
+  Public key (SS58): 5EyPuBJM2MvBRi1LWUWV7MGVKRWqEPXL4oryVHYKtAdG7RSj
+  SS58 Address:      5EyPuBJM2MvBRi1LWUWV7MGVKRWqEPXL4oryVHYKtAdG7RSj
+  
+Secret phrase:       divide number chief slow lunch aerobic thank require bottom country rabbit kick
+  Secret seed:       0xaf905333522e44c57ece667d7c129b0431a81bd8bc336be74d4e7b17dc56bf76
+  Public key (hex):  0x6c91303285771415846e90a20fcc488d25858f4c901e5f8d54e18c56c3c61803
+  Account ID:        0x6c91303285771415846e90a20fcc488d25858f4c901e5f8d54e18c56c3c61803
+  Public key (SS58): 5EX4A9u1zm7DZKRSnr4FhGcU1gsySAqhfvyndnkj7KroWsq9
+  SS58 Address:      5EX4A9u1zm7DZKRSnr4FhGcU1gsySAqhfvyndnkj7KroWsq9
+Secret Key URI `0xaf905333522e44c57ece667d7c129b0431a81bd8bc336be74d4e7b17dc56bf76` is account:
+  Secret seed:       0xaf905333522e44c57ece667d7c129b0431a81bd8bc336be74d4e7b17dc56bf76
+  Public key (hex):  0xc0c8c79f43ebd4a868babecdce143c87430a308004b1161ef9bb7c68d2e22577
+  Account ID:        0xc0c8c79f43ebd4a868babecdce143c87430a308004b1161ef9bb7c68d2e22577
+  Public key (SS58): 5GRUhGV6hAQt5cErVMExbmQ2eVo7GcBtc6Zoc5ty9xcyeHMZ
+  SS58 Address:      5GRUhGV6hAQt5cErVMExbmQ2eVo7GcBtc6Zoc5ty9xcyeHMZ
+  
+Secret phrase:       limit any inner cook scan mind pact beef notice clip puzzle awful
+  Secret seed:       0x0a7c1ab47570a2ddb6d40b8bffa1d64c54b38adfb48590a25f7dcb4d927034fd
+  Public key (hex):  0x8c80847693353181b38219a74cda8923735d88c04d11384a6dbfad5e61399505
+  Account ID:        0x8c80847693353181b38219a74cda8923735d88c04d11384a6dbfad5e61399505
+  Public key (SS58): 5FEvjo9Kt8XZ3AaGKu9ie4dCKeZs1b3HZNEM2t78i8t6hUnQ
+  SS58 Address:      5FEvjo9Kt8XZ3AaGKu9ie4dCKeZs1b3HZNEM2t78i8t6hUnQ
+Secret Key URI `0x0a7c1ab47570a2ddb6d40b8bffa1d64c54b38adfb48590a25f7dcb4d927034fd` is account:
+  Secret seed:       0x0a7c1ab47570a2ddb6d40b8bffa1d64c54b38adfb48590a25f7dcb4d927034fd
+  Public key (hex):  0x4f418fea38e1ac0f4e6eaeace1e9cc0df399857000e6ec28106587d60b3e7e08
+  Account ID:        0x4f418fea38e1ac0f4e6eaeace1e9cc0df399857000e6ec28106587d60b3e7e08
+  Public key (SS58): 5Drd7gm2kyGHafAk8QvRsX8EDNJekE29x9vNKKuKTg33avGz
+  SS58 Address:      5Drd7gm2kyGHafAk8QvRsX8EDNJekE29x9vNKKuKTg33avGz
+  
+Secret phrase:       bomb clay thumb crush barely history reject purchase method club current diesel
+  Secret seed:       0x02340296091e3243b96824a99a630381cd0bf16326d90a7ff3379a71d4a72fb1
+  Public key (hex):  0xc2c0f1a3b6d6315f908f0ab600fb38db0585760aca0129096262fad1b954fa32
+  Account ID:        0xc2c0f1a3b6d6315f908f0ab600fb38db0585760aca0129096262fad1b954fa32
+  Public key (SS58): 5GU4Tp8xDbFv7HCQoNcTQeLz5LTMLozz1y5dJ7pbweUhtCj7
+  SS58 Address:      5GU4Tp8xDbFv7HCQoNcTQeLz5LTMLozz1y5dJ7pbweUhtCj7
+Secret Key URI `0x02340296091e3243b96824a99a630381cd0bf16326d90a7ff3379a71d4a72fb1` is account:
+  Secret seed:       0x02340296091e3243b96824a99a630381cd0bf16326d90a7ff3379a71d4a72fb1
+  Public key (hex):  0x47f5616471cd5557925f0bf9494a6edb092dfcda48a85fc4b62316639b3ac432
+  Account ID:        0x47f5616471cd5557925f0bf9494a6edb092dfcda48a85fc4b62316639b3ac432
+  Public key (SS58): 5Dh49fVddbdUVvaC4uJAr6R8SKbzSq8LB8SNigk4zWJVa5sy
+  SS58 Address:      5Dh49fVddbdUVvaC4uJAr6R8SKbzSq8LB8SNigk4zWJVa5sy
+  
+Secret phrase:       exchange smile boss coin culture conduct outside lens duty spin siren goddess
+  Secret seed:       0x78589be680b825bbc829f546db4c2856d8d267293344cc4a62ecd4d281908ac3
+  Public key (hex):  0xbaa2cd6710479cb932a5bf70363754361f2dc72a655e4c3ba80fb63474c30b18
+  Account ID:        0xbaa2cd6710479cb932a5bf70363754361f2dc72a655e4c3ba80fb63474c30b18
+  Public key (SS58): 5GHR8GWUQc26zfKwJnpSMiguxQ15wo19S6YANEQMvkYSsv8C
+  SS58 Address:      5GHR8GWUQc26zfKwJnpSMiguxQ15wo19S6YANEQMvkYSsv8C
+Secret Key URI `0x78589be680b825bbc829f546db4c2856d8d267293344cc4a62ecd4d281908ac3` is account:
+  Secret seed:       0x78589be680b825bbc829f546db4c2856d8d267293344cc4a62ecd4d281908ac3
+  Public key (hex):  0x50921a1b47e66b2b6cbbcfe00982b101322485c934dc57047306726b2017befa
+  Account ID:        0x50921a1b47e66b2b6cbbcfe00982b101322485c934dc57047306726b2017befa
+  Public key (SS58): 5DtM68dDEhM9uSVT1zcuocdUD6rF36LNNUB6mfBX21ni6jzu
+  SS58 Address:      5DtM68dDEhM9uSVT1zcuocdUD6rF36LNNUB6mfBX21ni6jzu
+  
+Secret phrase:       toward live point vessel senior state virus garbage sudden wage network tool
+  Secret seed:       0x89efbc31ab5997e5a9546aa5744e072b8ac539ef92755b13af5e4f413b409b7d
+  Public key (hex):  0x28eaaeb6ac98de2f1e759eae89ab10a42c42e1f6367aa5224a5911110f2e980f
+  Account ID:        0x28eaaeb6ac98de2f1e759eae89ab10a42c42e1f6367aa5224a5911110f2e980f
+  Public key (SS58): 5CzMVFENrd6GvrQG9Ee4P7HTmqG4DV8pVXeCXfuDXYvW6xDf
+  SS58 Address:      5CzMVFENrd6GvrQG9Ee4P7HTmqG4DV8pVXeCXfuDXYvW6xDf
+Secret Key URI `0x89efbc31ab5997e5a9546aa5744e072b8ac539ef92755b13af5e4f413b409b7d` is account:
+  Secret seed:       0x89efbc31ab5997e5a9546aa5744e072b8ac539ef92755b13af5e4f413b409b7d
+  Public key (hex):  0x97238953980f7e645ad5a81b5eb12dc11fecfdf267760735b83a65a333ece653
+  Account ID:        0x97238953980f7e645ad5a81b5eb12dc11fecfdf267760735b83a65a333ece653
+  Public key (SS58): 5FUseKbeL7e28d1tV3PV83mrkdGLPC6JdNQPbdpSJPL4bPAM
+  SS58 Address:      5FUseKbeL7e28d1tV3PV83mrkdGLPC6JdNQPbdpSJPL4bPAM
+  
+Secret phrase:       wrap iron real enrich evil theme payment renew victory shadow stem trophy
+  Secret seed:       0xbfef9d899e39f83ec789eb552e4db5dfa8fb72a6b6dbedbbaa7592681fdfca4a
+  Public key (hex):  0xf4c7aedeea5e96dccbf12f3c4c2ba18ce680a0e9e7999d3dce8af2098e4ad36b
+  Account ID:        0xf4c7aedeea5e96dccbf12f3c4c2ba18ce680a0e9e7999d3dce8af2098e4ad36b
+  Public key (SS58): 5HbernvcXwMbh7gMwLq8Mu8mcmnGdCvq6243nB8KNJqFhRnu
+  SS58 Address:      5HbernvcXwMbh7gMwLq8Mu8mcmnGdCvq6243nB8KNJqFhRnu
+Secret Key URI `0xbfef9d899e39f83ec789eb552e4db5dfa8fb72a6b6dbedbbaa7592681fdfca4a` is account:
+  Secret seed:       0xbfef9d899e39f83ec789eb552e4db5dfa8fb72a6b6dbedbbaa7592681fdfca4a
+  Public key (hex):  0xe1308da25a7f803a8e1537348c67f3884a15e1950af030ac946669840c88c72e
+  Account ID:        0xe1308da25a7f803a8e1537348c67f3884a15e1950af030ac946669840c88c72e
+  Public key (SS58): 5H9y47kuQJmXuwwXvjUYRQxDNkozyFbHVcyZ5nQuqp9Saqye
+  SS58 Address:      5H9y47kuQJmXuwwXvjUYRQxDNkozyFbHVcyZ5nQuqp9Saqye
+  
+Secret phrase:       media hold recipe flip foster lawn either reason slight capable belt surge
+  Secret seed:       0x3ade619f2eb08ddea422358ee2e16e9e90726513bfb7d63f040d6e1ec54e3849
+  Public key (hex):  0x8e23f86d34435608743134c7359ea9c2329ab9768e6f0d331a3771f7b837054b
+  Account ID:        0x8e23f86d34435608743134c7359ea9c2329ab9768e6f0d331a3771f7b837054b
+  Public key (SS58): 5FH5LoXdASKQPMhvTcHE3APLvN3AuNrS5QVGb9ynT6TdAwFU
+  SS58 Address:      5FH5LoXdASKQPMhvTcHE3APLvN3AuNrS5QVGb9ynT6TdAwFU
+Secret Key URI `0x3ade619f2eb08ddea422358ee2e16e9e90726513bfb7d63f040d6e1ec54e3849` is account:
+  Secret seed:       0x3ade619f2eb08ddea422358ee2e16e9e90726513bfb7d63f040d6e1ec54e3849
+  Public key (hex):  0x3b61f7d40f538f322fe0f7535bfd4b427d3b4fa99e06c847b264142989644f3e
+  Account ID:        0x3b61f7d40f538f322fe0f7535bfd4b427d3b4fa99e06c847b264142989644f3e
+  Public key (SS58): 5DQZnUr5gxc583WtfaLDhPrsTXJrYqdY5ueELLjNNetSfBP2
+  SS58 Address:      5DQZnUr5gxc583WtfaLDhPrsTXJrYqdY5ueELLjNNetSfBP2
+
+Secret phrase:       action ski robust margin ride window female amused utility rival primary vast
+  Secret seed:       0x856a4b72587ae954b2cd4520101cfb5c99b9c7e7d8a00c641473201178d3679f
+  Public key (hex):  0xb261f3f833d9deadc3ae503d2ef3ffa4bca0f4f4082a118e87aab9134cd72b7c
+  Account ID:        0xb261f3f833d9deadc3ae503d2ef3ffa4bca0f4f4082a118e87aab9134cd72b7c
+  Public key (SS58): 5G6bUioC99JFMWYDiyLC2uARXXSMcGz7Q8x9s4WuG25pZkmM
+  SS58 Address:      5G6bUioC99JFMWYDiyLC2uARXXSMcGz7Q8x9s4WuG25pZkmM
+Secret Key URI `0x856a4b72587ae954b2cd4520101cfb5c99b9c7e7d8a00c641473201178d3679f` is account:
+  Secret seed:       0x856a4b72587ae954b2cd4520101cfb5c99b9c7e7d8a00c641473201178d3679f
+  Public key (hex):  0xa1e9d66240f3aaf49f43f8d63aa7a12f838e8a1af1488aafca1066674af40ab0
+  Account ID:        0xa1e9d66240f3aaf49f43f8d63aa7a12f838e8a1af1488aafca1066674af40ab0
+  Public key (SS58): 5Fj12jxC3ZMFLH6Uuthww7Hnqu4gwNvV4zfMHizecVUNJ5Fz
+  SS58 Address:      5Fj12jxC3ZMFLH6Uuthww7Hnqu4gwNvV4zfMHizecVUNJ5Fz
+
+./target/release/subkey inspect --password 123456 --scheme Ed25519 0x019216df060179fab7ae75981f7c875fb75eb47e6ff89bcf112d8e3b8ccefa75
+./target/release/subkey inspect --password 123456 --scheme Ed25519 0xc07b5fa178d06e545049f117d94633e576271202b6e03665d935b9d89c5055c6
+./target/release/subkey inspect --password 123456 --scheme Ed25519 0xaf905333522e44c57ece667d7c129b0431a81bd8bc336be74d4e7b17dc56bf76
+./target/release/subkey inspect --password 123456 --scheme Ed25519 0x0a7c1ab47570a2ddb6d40b8bffa1d64c54b38adfb48590a25f7dcb4d927034fd
+./target/release/subkey inspect --password 123456 --scheme Ed25519 0x02340296091e3243b96824a99a630381cd0bf16326d90a7ff3379a71d4a72fb1
+./target/release/subkey inspect --password 123456 --scheme Ed25519 0x78589be680b825bbc829f546db4c2856d8d267293344cc4a62ecd4d281908ac3
+./target/release/subkey inspect --password 123456 --scheme Ed25519 0x89efbc31ab5997e5a9546aa5744e072b8ac539ef92755b13af5e4f413b409b7d
+./target/release/subkey inspect --password 123456 --scheme Ed25519 0xbfef9d899e39f83ec789eb552e4db5dfa8fb72a6b6dbedbbaa7592681fdfca4a
+./target/release/subkey inspect --password 123456 --scheme Ed25519 0x3ade619f2eb08ddea422358ee2e16e9e90726513bfb7d63f040d6e1ec54e3849
+./target/release/subkey inspect --password 123456 --scheme Ed25519 0x856a4b72587ae954b2cd4520101cfb5c99b9c7e7d8a00c641473201178d3679f
+
+
+// aura key
+"5HpxdSjV2j5uedrXjSRjctJXBPwaE1h22o2jqcMi4cT7MpNA",
+"5D2UJ9FSUPBHbY1QvAbNkoMvaVckq6k2sGS33gmVGd5dxYQX",
+"5EX4A9u1zm7DZKRSnr4FhGcU1gsySAqhfvyndnkj7KroWsq9",
+"5FEvjo9Kt8XZ3AaGKu9ie4dCKeZs1b3HZNEM2t78i8t6hUnQ",
+"5GU4Tp8xDbFv7HCQoNcTQeLz5LTMLozz1y5dJ7pbweUhtCj7",
+"5GHR8GWUQc26zfKwJnpSMiguxQ15wo19S6YANEQMvkYSsv8C",
+"5CzMVFENrd6GvrQG9Ee4P7HTmqG4DV8pVXeCXfuDXYvW6xDf",
+"5HbernvcXwMbh7gMwLq8Mu8mcmnGdCvq6243nB8KNJqFhRnu",
+"5FH5LoXdASKQPMhvTcHE3APLvN3AuNrS5QVGb9ynT6TdAwFU",
+"5G6bUioC99JFMWYDiyLC2uARXXSMcGz7Q8x9s4WuG25pZkmM"
+
+
+// grandpa key
+[
+    "5HDwJGQCGkWdKAV2VbJA8S4JM8AQZkJxe3oHj2epgGytqyV2",
+    1
+],
+[
+    "5EyPuBJM2MvBRi1LWUWV7MGVKRWqEPXL4oryVHYKtAdG7RSj",
+    1
+],
+[
+    "5GRUhGV6hAQt5cErVMExbmQ2eVo7GcBtc6Zoc5ty9xcyeHMZ",
+    1
+],
+[
+    "5Drd7gm2kyGHafAk8QvRsX8EDNJekE29x9vNKKuKTg33avGz",
+    1
+],
+[
+    "5Dh49fVddbdUVvaC4uJAr6R8SKbzSq8LB8SNigk4zWJVa5sy",
+    1
+],
+[
+    "5DtM68dDEhM9uSVT1zcuocdUD6rF36LNNUB6mfBX21ni6jzu",
+    1
+],
+[
+    "5FUseKbeL7e28d1tV3PV83mrkdGLPC6JdNQPbdpSJPL4bPAM",
+    1
+],
+[
+    "5H9y47kuQJmXuwwXvjUYRQxDNkozyFbHVcyZ5nQuqp9Saqye",
+    1
+],
+[
+    "5DQZnUr5gxc583WtfaLDhPrsTXJrYqdY5ueELLjNNetSfBP2",
+    1
+],
+[
+    "5Fj12jxC3ZMFLH6Uuthww7Hnqu4gwNvV4zfMHizecVUNJ5Fz",
+    1
+],
