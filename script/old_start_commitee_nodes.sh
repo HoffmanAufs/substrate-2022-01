@@ -1,7 +1,7 @@
 # 启动节点1
 # 按照生成的Raw配置文件启动node-template
 ./target/debug/node-template purge-chain --base-path ./tmp/C01 --chain local -y;\
-./target/debug/node-template \
+deepin-terminal -e "./target/debug/node-template \
 --base-path ./tmp/C01 \
 --chain ./tmp/RawAuraSpec.json \
 --port 30333 \
@@ -9,13 +9,13 @@
 --rpc-port 9933 \
 --validator \
 --rpc-methods Unsafe \
---name C01 &>>./tmp/C01.log &\
+--name C01 ";\
 sleep 1s
 
 # 启动节点2
 # 按照生成的Raw配置文件启动node-template
 ./target/debug/node-template purge-chain --base-path ./tmp/C02 --chain local -y;\
-./target/debug/node-template \
+deepin-terminal -e "./target/debug/node-template \
 --base-path ./tmp/C02 \
 --chain ./tmp/RawAuraSpec.json \
 --port 30334 \
@@ -24,13 +24,13 @@ sleep 1s
 --validator \
 --rpc-methods Unsafe \
 --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
---name C02 &>>./tmp/C02.log &\
+--name C02 ";\
 sleep 1s
 
 # 启动节点3
 # 按照生成的Raw配置文件启动node-template
 ./target/debug/node-template purge-chain --base-path ./tmp/C03 --chain local -y;\
-./target/debug/node-template \
+deepin-terminal -e "./target/debug/node-template \
 --base-path ./tmp/C03 \
 --chain ./tmp/RawAuraSpec.json \
 --port 30335 \
@@ -39,13 +39,13 @@ sleep 1s
 --validator \
 --rpc-methods Unsafe \
 --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
---name C03 &>>./tmp/C03.log &\
+--name C03 ";\
 sleep 1s
 
 # 启动节点4
 # 按照生成的Raw配置文件启动node-template
 ./target/debug/node-template purge-chain --base-path ./tmp/C04 --chain local -y;\
-./target/debug/node-template \
+deepin-terminal -e "./target/debug/node-template \
 --base-path ./tmp/C04 \
 --chain ./tmp/RawAuraSpec.json \
 --port 30336 \
@@ -54,11 +54,24 @@ sleep 1s
 --validator \
 --rpc-methods Unsafe \
 --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
---name C04 &>>./tmp/C04.log &\
+--name C04 ";\
 sleep 1s
 
 # 启动节点5
 # 按照生成的Raw配置文件启动node-template
+./target/debug/node-template purge-chain --base-path ./tmp/C05 --chain local -y;\
+deepin-terminal -e "./target/debug/node-template \
+--base-path ./tmp/C05 \
+--chain ./tmp/RawAuraSpec.json \
+--port 30337 \
+--ws-port 9949 \
+--rpc-port 9937 \
+--validator \
+--rpc-methods Unsafe \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--name C05 "\
+sleep 1s
+
 ./target/debug/node-template purge-chain --base-path ./tmp/C05 --chain local -y;\
 ./target/debug/node-template \
 --base-path ./tmp/C05 \
@@ -69,13 +82,13 @@ sleep 1s
 --validator \
 --rpc-methods Unsafe \
 --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
---name C05 &>>./tmp/C05.log &\
+--name C05 &>./tmp/C01.log &;\
 sleep 1s
 
 # 启动节点6
 # 按照生成的Raw配置文件启动node-template
 ./target/debug/node-template purge-chain --base-path ./tmp/C06 --chain local -y;\
-./target/debug/node-template \
+deepin-terminal -e "./target/debug/node-template \
 --base-path ./tmp/C06 \
 --chain ./tmp/RawAuraSpec.json \
 --port 30338 \
@@ -84,13 +97,13 @@ sleep 1s
 --validator \
 --rpc-methods Unsafe \
 --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
---name C06 &>>./tmp/C06.log &\
+--name C06 ";\
 sleep 1s
 
 # 启动节点7
 # 按照生成的Raw配置文件启动node-template
 ./target/debug/node-template purge-chain --base-path ./tmp/C07 --chain local -y;\
-./target/debug/node-template \
+deepin-terminal -e "./target/debug/node-template \
 --base-path ./tmp/C07 \
 --chain ./tmp/RawAuraSpec.json \
 --port 30339 \
@@ -99,13 +112,13 @@ sleep 1s
 --validator \
 --rpc-methods Unsafe \
 --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
---name C07 &>>./tmp/C07.log &\
+--name C07 ";\
 sleep 1s
 
 # 启动节点8
 # 按照生成的Raw配置文件启动node-template
 ./target/debug/node-template purge-chain --base-path ./tmp/C08 --chain local -y;\
-./target/debug/node-template \
+deepin-terminal -e "./target/debug/node-template \
 --base-path ./tmp/C08 \
 --chain ./tmp/RawAuraSpec.json \
 --port 30340 \
@@ -114,7 +127,7 @@ sleep 1s
 --validator \
 --rpc-methods Unsafe \
 --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
---name C08 &>>./tmp/C08.log &\
+--name C08 ";\
 sleep 1s
 
 # # 启动节点9
@@ -128,7 +141,7 @@ sleep 1s
 # --rpc-port 9941 \
 # --validator \
 # --rpc-methods Unsafe \
-# --name C09 &>>./tmp/C09.log &\
+# --name C09 ";\
 # sleep 1s
 
 # # 启动节点10
@@ -142,5 +155,5 @@ sleep 1s
 # --rpc-port 9942 \
 # --validator \
 # --rpc-methods Unsafe \
-# --name C10 &>>./tmp/C10.log &\
+# --name C10 ";\
 # sleep 1s

@@ -1,7 +1,6 @@
-fmt_str_1="""#启动节点{}
-# 按照生成的Raw配置文件启动node-template
+fmt_str_2="""# Node{}
 ./target/debug/node-template purge-chain --base-path ./tmp/{} --chain local -y;\\
-deepin-terminal -e "./target/debug/node-template \\
+./target/debug/node-template \\
 --base-path ./tmp/{} \\
 --chain ./tmp/RawAuraSpec.json \\
 --port {} \\
@@ -9,7 +8,7 @@ deepin-terminal -e "./target/debug/node-template \\
 --rpc-port {} \\
 --rpc-methods Unsafe \\
 --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \\
---name {} ";\\
+--name {} &>>./tmp/{}.log &\\
 sleep 1s
 """
 
@@ -23,4 +22,4 @@ for i in range(0, 20):
     rpc_port = 9933 + i
 
     # print(node_name, port, ws_port, rpc_port)
-    print(fmt_str_1.format(i+1, node_name, node_name, port, ws_port, rpc_port, node_name))
+    print(fmt_str_2.format(i+1, node_name, node_name, port, ws_port, rpc_port, node_name, node_name))
