@@ -29,7 +29,7 @@ pub use crate::{
 	// aux_schema::{MAX_SLOT_CAPACITY, PRUNING_BOUND},
 	slots::{SlotInfo}
 };
-use crate::slots::Slots;
+use crate::{slots::Slots, MAX_VOTE_RANK};
 
 use codec::{Codec, Decode, Encode};
 
@@ -757,7 +757,7 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 	loop{
 		match state {
 			AuthorState::WaitStart=>{
-				log::info!("AuthorState::WaitStart");
+				log::info!("➙AuthorState::S0, wait block or timeout");
 				let full_timeout_duration = Duration::from_secs(10);
 				let start_time = SystemTime::now();
 				loop{
@@ -768,6 +768,7 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 					futures::select!{
 						block = imported_blocks_stream.next()=>{
 							if let Some(block) = block{
+								log::info!("Author.S0, import block: {}", block.hash);
 								// log::info!("import block");
 								if sync_oracle.is_major_syncing(){
 									state = AuthorState::WaitStart;
@@ -788,7 +789,7 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 							let chain_head = match select_chain.best_chain().await{
 								Ok(x)=>x,
 								Err(e)=>{
-									log::info!("Author: select_chain err: {}", e);
+									log::info!("Author.S0: select_chain err: {}", e);
 									state = AuthorState::WaitStart;
 									break;
 								}
@@ -800,7 +801,7 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 				}
 			},
 			AuthorState::WaitProposal(cur_header)=>{
-				log::info!("AuthorState::WaitProposal: {}", cur_header.hash());
+				log::info!("➙AuthorState::S1 ({}), propaget vote and wait proposal", cur_header.hash());
 				let rand_bytes = match worker.propagate_vote(&cur_header.hash()){
 					Some(x)=>x,
 					None=>{
@@ -821,7 +822,7 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 					Ok(v) => v,
 					Err(e) => {
 						// state = AuthorState::WaitProposal(cur_header);
-						log::info!("{:?}", e);
+						log::info!("Author.S1, cal weight err {:?}", e);
 						state = AuthorState::WaitStart;
 						continue;
 					}
@@ -843,45 +844,45 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 					futures::select!{
 						block = imported_blocks_stream.next()=>{
 							if let Some(block) = block{
-								log::info!("Author, recv block from outside: {}", block.hash);
+								log::info!("Author.S1, import block: {}", block.hash);
 								if sync_oracle.is_major_syncing(){
 									state = AuthorState::WaitStart;
 									break;
 								}
 
-								if block.header.parent_hash() != &cur_header.hash(){
-									continue;
-								}
+								// if block.header.parent_hash() != &cur_header.hash(){
+								// 	continue;
+								// }
 
 								let new_block_election_info = match worker.caculate_weight_info_from_header(&block.header){
 									Ok(v)=>v,
 									Err(e) => {
-										log::info!("caculate block election weight error, {:?}", e);
+										log::info!("Author.S1, caculate block election weight error, {:?}", e);
 										continue
 									},
 								};
 
 								if new_block_election_info.weight <= min_election_weight {	// exceed 51%
-									log::info!("block outside with exceed 50% election");
+									log::info!("Author.S1, block({}) outside with exceed 50% election", block.hash);
 									state = AuthorState::WaitProposal(block.header);
 									break;
 								}
 
 								let local_random = BigUint::from_bytes_be(&rand_bytes);
 								if new_block_election_info.random < local_random {
-									log::info!("block outside with smaller random");
+									log::info!("Author.S1, block({}) outside with smaller random", block.hash);
 									state = AuthorState::WaitProposal(block.header);
 									break;
 								}
 
-								log::info!("Author: ignore the block: {:?}", block.hash);
+								log::info!("Author.S1: ignore the block: {:?}", block.hash);
 								// state = AuthorState::WaitProposal(block.header);
 								// break;
 							}
 						},
 						election = election_rx.select_next_some()=>{
 							if !worker.verify_election(&election, &cur_header.hash()){
-								log::info!("AuthorState::WaitProposal, election verify failed");
+								log::info!("Author.S1, election verify failed");
 								continue;
 							}
 
@@ -904,13 +905,16 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 							continue;
 						},
 						_ = timeout.fuse()=>{
-							log::info!("Author::WaitProposal timeout");
+							// log::info!("Author.S1, timeout");
 
 							if cur_election_weight < max_election_weight {
-								log::info!("Author: timeout, prepare block at: {}", cur_header.hash());
+								log::info!("Author.S1: timeout, prepare block at: {}", cur_header.hash());
 								if let Ok(slot_info) = slots.default_slot().await{
 									let _ = worker.produce_block(slot_info, &cur_header, rand_bytes, election_vec).await;
 								}
+							}
+							else{
+								log::info!("Author.S1: timeout, no weight prepare block at: {}", cur_header.hash());
 							}
 
 							state = AuthorState::WaitStart;
@@ -974,7 +978,7 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 	loop{
 		match state{
 			CommitteeState::WaitStart=>{
-				log::info!("--CommitteeState::WaitStart");
+				log::info!("►CommitteeState::S0, wait start");
 				let full_timeout_duration = Duration::from_secs(10);
 				let start_time = SystemTime::now();
 
@@ -988,6 +992,7 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 						block = imported_blocks_stream.next()=>{
 							is_init_state = false;
 							if let Some(block) = block{
+								log::info!("Committee.S0, import block: {}", block.hash);
 								if sync_oracle.is_major_syncing(){
 									state = CommitteeState::WaitStart;
 									break;
@@ -1006,24 +1011,44 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 						},
 						vote_data = vote_rx.select_next_some()=>{
 							if worker.verify_vote(&vote_data){
-								// log::info!("--Committee: recv vote with hash: {}", vote_data.hash);
-								// log::info!("--Committee: recv vote with hash: ({:?}, {:?}) {}", vote_data.sig_bytes[0..2], vote_data.pub_bytes[0..2], vote_data.hash);
+								// log::info!("Committee.S0: recv vote with hash: {}", vote_data.hash);
+								// log::info!("Committee.S0: recv vote with hash: ({:?}, {:?}) {}", vote_data.sig_bytes[0..2], vote_data.pub_bytes[0..2], vote_data.hash);
 								let sig_big_uint = BigUint::from_bytes_be(vote_data.sig_bytes.as_slice());
 								if let Some(bt_map) = root_vote_map.get_mut(&vote_data.hash){
 									bt_map.insert(sig_big_uint, vote_data.clone());
-
-									log::info!("--Committee: recv vote with hash: {} ({})", vote_data.hash, bt_map.len());
+									// while bt_map.len() >= MAX_VOTE_RANK{
+									// 	let mut keys = bt_map.keys().cloned().collect::<Vec<_>>();
+									// 	if let Some(tail) = keys.pop(){
+									// 		bt_map.remove(&tail);
+									// 	}
+									// }
+									// log::info!( "Committee.S0: recv vote with hash: {} ({})",vote_data.hash, bt_map.len());
+									log::info!(
+										"Committee.S0: recv vote with hash: {} ({}), \npub: {:?}\nsig: {:?}",
+										vote_data.hash,
+										bt_map.len(),
+										vote_data.pub_bytes,
+										vote_data.sig_bytes
+									);
 								}
 								else{
 									let mut new_bt_map = BTreeMap::new();
 									new_bt_map.insert(sig_big_uint, vote_data.clone());
 									root_vote_map.insert(vote_data.hash, new_bt_map);
 
-									log::info!("--Committee: root_vote_map insert: {} (1)", vote_data.hash);
+									// log::info!("Committee.S0: root_vote_map insert: {} (1)", vote_data.hash);
+									// log::info!("Committee.S0: recv vote with hash: {} (1)", vote_data.hash);
+									log::info!(
+										"Committee.S0: recv vote with hash: {} ({}), \npub: {:?}\nsig: {:?}",
+										vote_data.hash,
+										1,
+										vote_data.pub_bytes,
+										vote_data.sig_bytes
+									);
 								}
 							}
 							else{
-								log::info!("--CommitteeRecv: verify vote failed");
+								log::info!("Committee.S0: verify vote failed");
 							}
 							// continue;
 						},
@@ -1039,11 +1064,11 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 						_ = timeout.fuse()=>{
 							if is_init_state == true{
 								if let Some(header) = genesis_header.take(){
-									log::info!("--Committee to RecvVote from init");
-									if worker.is_committee(&header.hash()){
-										state = CommitteeState::RecvVote(header);
-										break;
-									}
+									// log::info!("Committee.S0 to RecvVote from init");
+									// if worker.is_committee(&header.hash()){
+									// 	state = CommitteeState::RecvVote(header);
+									// 	break;
+									// }
 								}
 							}
 						}
@@ -1051,7 +1076,7 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 				}
 			},
 			CommitteeState::RecvVote(cur_header)=>{
-				log::info!("--CommitteeState::RecvVote({})", cur_header.hash());
+				log::info!("►CommitteeState::S1 ({}), recv vote and send election", cur_header.hash());
 				let recv_duration = Duration::from_secs(8);
 				let full_timeout_duration = recv_duration;
 				let start_time = SystemTime::now();
@@ -1060,7 +1085,7 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 					Ok(v) => v,
 					Err(e) => {
 						// state = AuthorState::WaitProposal(cur_header);
-						log::info!("{:?}", e);
+						log::info!("Committee.S1, cal weight error: {:?}", e);
 						state = CommitteeState::WaitStart;
 						continue;
 					}
@@ -1074,6 +1099,7 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 					futures::select!{
 						block = imported_blocks_stream.next()=>{
 							if let Some(block) = block{
+								log::info!("Committee.S1, import block: {}", block.hash);
 								if sync_oracle.is_major_syncing(){
 									state = CommitteeState::WaitStart;
 									break;
@@ -1086,7 +1112,7 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 										},
 									};
 									if (block_weight_info.weight < min_election_weight) && worker.is_committee(&block.hash){
-										log::info!("--Committee: 50% exceed, {}", block.hash);
+										log::info!("Committee.S1: recv block with 50% exceed, {}", block.hash);
 										state = CommitteeState::RecvVote(block.header);
 										break;
 									}
@@ -1098,24 +1124,24 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 						},
 						vote_data = vote_rx.select_next_some()=>{
 							if worker.verify_vote(&vote_data){
-								// log::info!("--Committee: recv vote with hash: ({:?}, {:?}) {}", vote_data.sig_bytes[0..2], vote_data.pub_bytes[0..2], vote_data.hash);
+								// log::info!("Committee.S1: recv vote with hash: ({:?}, {:?}) {}", vote_data.sig_bytes[0..2], vote_data.pub_bytes[0..2], vote_data.hash);
 								// log::info!("--Committee: recv vote with hash: {}", vote_data.hash);
 								let sig_big_uint = BigUint::from_bytes_be(vote_data.sig_bytes.as_slice());
 								if let Some(bt_map) = root_vote_map.get_mut(&vote_data.hash){
 									bt_map.insert(sig_big_uint, vote_data.clone());
 
-									log::info!("--Committee: recv vote with hash: {} ({})", vote_data.hash, bt_map.len());
+									log::info!("Committee.S1: recv vote with hash: {} ({})", vote_data.hash, bt_map.len());
 								}
 								else{
 									let mut new_bt_map = BTreeMap::new();
 									new_bt_map.insert(sig_big_uint, vote_data.clone());
 									root_vote_map.insert(vote_data.hash, new_bt_map);
 
-									log::info!("--Committee: recv vote with hash: {} (1)", vote_data.hash);
+									log::info!("Committee.S1: recv vote with hash: {} (1)", vote_data.hash);
 								}
 							}
 							else{
-								log::info!("--CommitteeRecv: verify vote failed");
+								log::info!("CommitteeRecv.S1: verify vote failed");
 							}
 							// continue;
 						},
@@ -1143,7 +1169,7 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 									worker.propagate_election(cur_hash, election_result);
 								}
 								else{
-									log::info!("--Committee: no vote for hash: {}", cur_hash);
+									log::info!("Committee.S1: no vote for hash: {}", cur_hash);
 								}
 							}
 							state = CommitteeState::WaitStart;

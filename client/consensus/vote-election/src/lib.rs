@@ -424,6 +424,7 @@ where
 	P::Signature: TryFrom<Vec<u8>> + Member + Encode + Decode + Hash + Debug,
 {
 	let mut imported_blocks_stream = client.import_notification_stream();
+	let mut pre_finalize_vec = vec![];
 
     loop{
         if let Some(block)= imported_blocks_stream.next().await{
@@ -433,17 +434,24 @@ where
                 let min_election_weight = caculate_min_election_weight(committee_vec.len(), MAX_VOTE_RANK);
 
 				if let Ok(weight) = caculate_block_weight::<A, B, P::Signature, C>(&block.header, client.as_ref()){
+
 					if weight <= min_election_weight{
-						match client.finalize_block(BlockId::Hash(block.hash), None, true){
-							Err(e) => {
-								log::warn!("Failed to finalize block {:?}", e);
-								// rpc::send_result(&mut sender, Err(e.into()))
-							},
-							Ok(()) => {
-								log::info!("✅ Successfully finalized block: {}", block.hash);
-								// rpc::send_result(&mut sender, Ok(()))
-							},
+						pre_finalize_vec.push(block.hash);
+						while pre_finalize_vec.len() > 3{
+							let finalize_hash = pre_finalize_vec.remove(0);
+
+							match client.finalize_block(BlockId::Hash(finalize_hash), None, true){
+								Err(e) => {
+									log::warn!("Failed to finalize block {:?}", e);
+									// rpc::send_result(&mut sender, Err(e.into()))
+								},
+								Ok(()) => {
+									log::info!("✅ Successfully finalized block: {}", block.hash);
+									// rpc::send_result(&mut sender, Ok(()))
+								},
+							}
 						}
+
 					}
 				}
             }
@@ -1069,8 +1077,8 @@ where
 				let mut rank_vec = vec![];
 				for election in election_vec.iter(){
 					let rank = match election.vote_list.iter().position(|vote|vote.pub_bytes == pub_bytes){
-						Some(x)=>x,
-						None=> MAX_VOTE_RANK,
+						Some(x) if x < MAX_VOTE_RANK =>x,
+						_ => MAX_VOTE_RANK,
 					};
 					rank_vec.push(rank);
 				}
