@@ -8,7 +8,7 @@ deepin-terminal -e "./target/debug/node-template \
 --ws-port 9955 \
 --rpc-port 9943 \
 --rpc-methods Unsafe \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 --name N01 ";\
 sleep 1s
 
@@ -22,7 +22,7 @@ deepin-terminal -e "./target/debug/node-template \
 --ws-port 9956 \
 --rpc-port 9944 \
 --rpc-methods Unsafe \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 --name N02 ";\
 sleep 1s
 
@@ -36,7 +36,7 @@ deepin-terminal -e "./target/debug/node-template \
 --ws-port 9957 \
 --rpc-port 9945 \
 --rpc-methods Unsafe \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 --name N03 ";\
 sleep 1s
 
@@ -50,7 +50,7 @@ deepin-terminal -e "./target/debug/node-template \
 --ws-port 9958 \
 --rpc-port 9946 \
 --rpc-methods Unsafe \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 --name N04 ";\
 sleep 1s
 
@@ -64,7 +64,7 @@ deepin-terminal -e "./target/debug/node-template \
 --ws-port 9959 \
 --rpc-port 9947 \
 --rpc-methods Unsafe \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 --name N05 ";\
 sleep 1s
 
@@ -78,7 +78,7 @@ deepin-terminal -e "./target/debug/node-template \
 --ws-port 9960 \
 --rpc-port 9948 \
 --rpc-methods Unsafe \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 --name N06 ";\
 sleep 1s
 
@@ -92,7 +92,7 @@ deepin-terminal -e "./target/debug/node-template \
 --ws-port 9961 \
 --rpc-port 9949 \
 --rpc-methods Unsafe \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 --name N07 ";\
 sleep 1s
 
@@ -106,7 +106,7 @@ deepin-terminal -e "./target/debug/node-template \
 --ws-port 9962 \
 --rpc-port 9950 \
 --rpc-methods Unsafe \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 --name N08 ";\
 sleep 1s
 
@@ -120,7 +120,7 @@ deepin-terminal -e "./target/debug/node-template \
 --ws-port 9963 \
 --rpc-port 9951 \
 --rpc-methods Unsafe \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 --name N09 ";\
 sleep 1s
 
@@ -134,7 +134,7 @@ deepin-terminal -e "./target/debug/node-template \
 --ws-port 9964 \
 --rpc-port 9952 \
 --rpc-methods Unsafe \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 --name N10 ";\
 sleep 1s
 
@@ -148,7 +148,7 @@ deepin-terminal -e "./target/debug/node-template \
 --ws-port 9965 \
 --rpc-port 9953 \
 --rpc-methods Unsafe \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 --name N11 ";\
 sleep 1s
 
@@ -162,7 +162,7 @@ deepin-terminal -e "./target/debug/node-template \
 --ws-port 9966 \
 --rpc-port 9954 \
 --rpc-methods Unsafe \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 --name N12 ";\
 sleep 1s
 
@@ -176,7 +176,7 @@ sleep 1s
 # --ws-port 9967 \
 # --rpc-port 9955 \
 # --rpc-methods Unsafe \
-# --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+# --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 # --name N13 ";\
 # sleep 1s
 
@@ -190,7 +190,7 @@ sleep 1s
 # --ws-port 9968 \
 # --rpc-port 9956 \
 # --rpc-methods Unsafe \
-# --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+# --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 # --name N14 ";\
 # sleep 1s
 
@@ -204,7 +204,7 @@ sleep 1s
 # --ws-port 9969 \
 # --rpc-port 9957 \
 # --rpc-methods Unsafe \
-# --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+# --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 # --name N15 ";\
 # sleep 1s
 
@@ -218,7 +218,7 @@ sleep 1s
 # --ws-port 9970 \
 # --rpc-port 9958 \
 # --rpc-methods Unsafe \
-# --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+# --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 # --name N16 ";\
 # sleep 1s
 
@@ -232,7 +232,7 @@ sleep 1s
 # --ws-port 9971 \
 # --rpc-port 9959 \
 # --rpc-methods Unsafe \
-# --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+# --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 # --name N17 ";\
 # sleep 1s
 
@@ -246,7 +246,7 @@ sleep 1s
 # --ws-port 9972 \
 # --rpc-port 9960 \
 # --rpc-methods Unsafe \
-# --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+# --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 # --name N18 ";\
 # sleep 1s
 
@@ -260,7 +260,7 @@ sleep 1s
 # --ws-port 9973 \
 # --rpc-port 9961 \
 # --rpc-methods Unsafe \
-# --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+# --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 # --name N19 ";\
 # sleep 1s
 
@@ -274,6 +274,6 @@ sleep 1s
 # --ws-port 9974 \
 # --rpc-port 9962 \
 # --rpc-methods Unsafe \
-# --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+# --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 # --name N20 ";\
 # sleep 1s

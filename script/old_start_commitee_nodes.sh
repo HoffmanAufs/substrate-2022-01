@@ -23,7 +23,7 @@ deepin-terminal -e "./target/debug/node-template \
 --rpc-port 9934 \
 --validator \
 --rpc-methods Unsafe \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 --name C02 ";\
 sleep 1s
 
@@ -38,7 +38,7 @@ deepin-terminal -e "./target/debug/node-template \
 --rpc-port 9935 \
 --validator \
 --rpc-methods Unsafe \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 --name C03 ";\
 sleep 1s
 
@@ -53,7 +53,7 @@ deepin-terminal -e "./target/debug/node-template \
 --rpc-port 9936 \
 --validator \
 --rpc-methods Unsafe \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 --name C04 ";\
 sleep 1s
 
@@ -68,7 +68,7 @@ deepin-terminal -e "./target/debug/node-template \
 --rpc-port 9937 \
 --validator \
 --rpc-methods Unsafe \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 --name C05 "\
 sleep 1s
 
@@ -81,7 +81,7 @@ sleep 1s
 --rpc-port 9937 \
 --validator \
 --rpc-methods Unsafe \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 --name C05 &>./tmp/C01.log &;\
 sleep 1s
 
@@ -96,7 +96,7 @@ deepin-terminal -e "./target/debug/node-template \
 --rpc-port 9938 \
 --validator \
 --rpc-methods Unsafe \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 --name C06 ";\
 sleep 1s
 
@@ -111,7 +111,7 @@ deepin-terminal -e "./target/debug/node-template \
 --rpc-port 9939 \
 --validator \
 --rpc-methods Unsafe \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 --name C07 ";\
 sleep 1s
 
@@ -126,7 +126,7 @@ deepin-terminal -e "./target/debug/node-template \
 --rpc-port 9940 \
 --validator \
 --rpc-methods Unsafe \
---bootnodes /ip4/127.0.0.1/tcp/30333/p2p/12D3KooWLZk8bs6NRoQK58ZkWtx8ECoyWWrDNaYmRkZxyb7TXmaf \
+--bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 --name C08 ";\
 sleep 1s
 
