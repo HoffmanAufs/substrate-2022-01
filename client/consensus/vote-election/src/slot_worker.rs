@@ -757,7 +757,7 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 	loop{
 		match state {
 			AuthorState::WaitStart=>{
-				log::info!("➙AuthorState::S0, wait block or timeout");
+				log::info!("►AuthorState::S0, wait block or timeout");
 				let full_timeout_duration = Duration::from_secs(10);
 				let start_time = SystemTime::now();
 				loop{
@@ -801,7 +801,7 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 				}
 			},
 			AuthorState::WaitProposal(cur_header)=>{
-				log::info!("➙AuthorState::S1 ({}), propaget vote and wait proposal", cur_header.hash());
+				log::info!("►AuthorState::S1 ({}), propagate vote and wait proposal", cur_header.hash());
 				let rand_bytes = match worker.propagate_vote(&cur_header.hash()){
 					Some(x)=>x,
 					None=>{
@@ -1064,11 +1064,11 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 						_ = timeout.fuse()=>{
 							if is_init_state == true{
 								if let Some(header) = genesis_header.take(){
-									// log::info!("Committee.S0 to RecvVote from init");
-									// if worker.is_committee(&header.hash()){
-									// 	state = CommitteeState::RecvVote(header);
-									// 	break;
-									// }
+									log::info!("Committee.S0, timeout from init");
+									if worker.is_committee(&header.hash()){
+										state = CommitteeState::RecvVote(header);
+										break;
+									}
 								}
 							}
 						}

@@ -352,7 +352,8 @@ pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError> 
 			task_manager.spawn_handle(),
 			client.clone(),
 			transaction_pool.clone(),
-			prometheus_registry.as_ref(),
+			// prometheus_registry.as_ref(),
+			None,
 			telemetry.as_ref().map(|x| x.handle()),
 		);
 

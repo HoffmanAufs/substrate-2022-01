@@ -1,7 +1,6 @@
 **/target/
 **/tmp/
 /log/
-/script/
 **/*.rs.bk
 *.swp
 .wasm-binaries
