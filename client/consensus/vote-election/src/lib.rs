@@ -437,6 +437,12 @@ where
 
 					if weight <= min_election_weight{
 						pre_finalize_vec.push(block.hash);
+						// log::info!(
+						// 	"⇩ Finalizer: buffer finalize block({}): #{} ({})",
+						// 	pre_finalize_vec.len(),
+						// 	block.header.number(),
+						// 	block.hash
+						// );
 						while pre_finalize_vec.len() > 3{
 							let finalize_hash = pre_finalize_vec.remove(0);
 
@@ -862,7 +868,7 @@ where
 		// hash_verify
 		// let cur_hash = header.hash();
 		if cur_hash != election_data.hash{
-			log::info!("verify_election() failed, hash not eq, cur: {}, recv: {}", cur_hash, election_data.hash);
+			// log::info!("verify_election() failed, hash not eq, cur: {}, recv: {}", cur_hash, election_data.hash);
 			return false;
 		}
 

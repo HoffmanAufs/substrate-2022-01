@@ -768,7 +768,7 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 					futures::select!{
 						block = imported_blocks_stream.next()=>{
 							if let Some(block) = block{
-								log::info!("Author.S0, import block: {}", block.hash);
+								log::info!("Author.S0, import block: #{} ({})", block.header.number(), block.hash);
 								// log::info!("import block");
 								if sync_oracle.is_major_syncing(){
 									state = AuthorState::WaitStart;
@@ -801,7 +801,11 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 				}
 			},
 			AuthorState::WaitProposal(cur_header)=>{
-				log::info!("►AuthorState::S1 ({}), propagate vote and wait proposal", cur_header.hash());
+				log::info!(
+					"►AuthorState::S1 #{} ({}), propagate vote and wait proposal",
+					cur_header.number(),
+					cur_header.hash(),
+				);
 				let rand_bytes = match worker.propagate_vote(&cur_header.hash()){
 					Some(x)=>x,
 					None=>{
@@ -844,15 +848,11 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 					futures::select!{
 						block = imported_blocks_stream.next()=>{
 							if let Some(block) = block{
-								log::info!("Author.S1, Import block: {}", block.hash);
+								log::info!("Author.S1, Import block: #{} ({})", block.header.number(), block.hash);
 								if sync_oracle.is_major_syncing(){
 									state = AuthorState::WaitStart;
 									break;
 								}
-
-								// if block.header.parent_hash() != &cur_header.hash(){
-								// 	continue;
-								// }
 
 								let new_block_election_info = match worker.caculate_weight_info_from_header(&block.header){
 									Ok(v)=>v,
@@ -863,24 +863,48 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 								};
 
 								if new_block_election_info.weight <= min_election_weight {	// exceed 51%
-									log::info!("Author.S1, block({}) outside with exceed 50% election", block.hash);
+									log::info!(
+										"Author.S1, block #{} ({}) outside with exceed 50% election", 
+										block.header.number(),
+										block.hash
+									);
 									state = AuthorState::WaitProposal(block.header);
 									break;
 								}
 
-								let local_random = BigUint::from_bytes_be(&rand_bytes);
-								if new_block_election_info.random < local_random {
-									log::info!("Author.S1, block({}) outside with smaller random", block.hash);
-									state = AuthorState::WaitProposal(block.header);
-									break;
+								if block.header.parent_hash() == &cur_header.hash(){
+									let local_random = BigUint::from_bytes_be(&rand_bytes);
+									if new_block_election_info.random < local_random {
+										log::info!(
+											"Author.S1, block #{} ({}) outside with smaller random",
+											block.hash,
+											block.header.number(),
+										);
+										state = AuthorState::WaitProposal(block.header);
+										break;
+									}
 								}
 
-								log::info!("Author.S1: ignore the block: {:?}", block.hash);
+								log::info!(
+									"Author.S1: ignore the block: #{} ({})",
+									block.header.number(),
+									block.hash
+								);
 								// state = AuthorState::WaitProposal(block.header);
 								// break;
 							}
 						},
 						election = election_rx.select_next_some()=>{
+							if election.hash != cur_header.hash(){
+								log::info!(
+									"Author.S1, election hash dismatch: cur: #{} ({}), recv: {}",
+									cur_header.number(),
+									cur_header.hash(),
+									election.hash,
+								);
+								continue;
+							}
+
 							if !worker.verify_election(&election, &cur_header.hash()){
 								log::info!("Author.S1, election verify failed");
 								continue;
@@ -908,13 +932,21 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 							// log::info!("Author.S1, timeout");
 
 							if cur_election_weight < max_election_weight {
-								log::info!("Author.S1: timeout, prepare block at: {}", cur_header.hash());
+								log::info!(
+									"Author.S1: timeout, prepare block at: #{} ({})",
+									cur_header.number(),
+									cur_header.hash()
+								);
 								if let Ok(slot_info) = slots.default_slot().await{
 									let _ = worker.produce_block(slot_info, &cur_header, rand_bytes, election_vec).await;
 								}
 							}
 							else{
-								log::info!("Author.S1: timeout, no weight prepare block at: {}", cur_header.hash());
+								log::info!(
+									"Author.S1: timeout, no weight prepare block at: #{} ({})",
+									cur_header.number(),
+									cur_header.hash(),
+								);
 							}
 
 							state = AuthorState::WaitStart;
@@ -992,7 +1024,7 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 						block = imported_blocks_stream.next()=>{
 							is_init_state = false;
 							if let Some(block) = block{
-								log::info!("Committee.S0, import block: {}", block.hash);
+								log::info!("Committee.S0, import block: #{} ({})", block.header.number(), block.hash);
 								if sync_oracle.is_major_syncing(){
 									state = CommitteeState::WaitStart;
 									break;
@@ -1076,7 +1108,11 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 				}
 			},
 			CommitteeState::RecvVote(cur_header)=>{
-				log::info!("►CommitteeState::S1 ({}), recv vote and send election", cur_header.hash());
+				log::info!(
+					"►CommitteeState::S1 #{} ({}), recv vote and send election",
+					cur_header.number(),
+					cur_header.hash(),
+				);
 				let recv_duration = Duration::from_secs(8);
 				let full_timeout_duration = recv_duration;
 				let start_time = SystemTime::now();
@@ -1099,7 +1135,7 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 					futures::select!{
 						block = imported_blocks_stream.next()=>{
 							if let Some(block) = block{
-								log::info!("Committee.S1, import block: {}", block.hash);
+								log::info!("Committee.S1, import block: #{}({})", block.header.number(), block.hash);
 								if sync_oracle.is_major_syncing(){
 									state = CommitteeState::WaitStart;
 									break;
@@ -1112,7 +1148,7 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 										},
 									};
 									if (block_weight_info.weight < min_election_weight) && worker.is_committee(&block.hash){
-										log::info!("Committee.S1: recv block with 50% exceed, {}", block.hash);
+										log::info!("Committee.S1: recv block with 50% exceed, #{}({})", block.header.number(), block.hash);
 										state = CommitteeState::RecvVote(block.header);
 										break;
 									}
@@ -1183,7 +1219,7 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 									worker.propagate_election(cur_hash, election_result);
 								}
 								else{
-									log::info!("Committee.S1: no vote for hash: {}", cur_hash);
+									log::info!("Committee.S1: no vote for hash: #{}({})", cur_header.number(), cur_hash);
 								}
 							}
 							state = CommitteeState::WaitStart;

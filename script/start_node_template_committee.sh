@@ -29,4 +29,59 @@ sleep 1s
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     &>./tmp/bob.log &\
 sleep 1s
-# --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
+
+./target/debug/node-template purge-chain --base-path ./tmp/charlie --chain local -y;\
+./target/debug/node-template \
+    --base-path ./tmp/charlie \
+    --chain local \
+    --charlie \
+    --port 30335 \
+    --ws-port 9947 \
+    --rpc-port 9935 \
+    --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
+    --validator \
+    --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
+    &>./tmp/charlie.log &\
+sleep 1s
+
+./target/debug/node-template purge-chain --base-path ./tmp/dave --chain local -y;\
+./target/debug/node-template \
+    --base-path ./tmp/dave \
+    --chain local \
+    --dave \
+    --port 30336 \
+    --ws-port 9948 \
+    --rpc-port 9936 \
+    --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
+    --validator \
+    --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
+    &>./tmp/dave.log &\
+sleep 1s
+
+./target/debug/node-template purge-chain --base-path ./tmp/eve --chain local -y;\
+./target/debug/node-template \
+    --base-path ./tmp/eve \
+    --chain local \
+    --eve \
+    --port 30337 \
+    --ws-port 9949 \
+    --rpc-port 9937 \
+    --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
+    --validator \
+    --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
+    &>./tmp/eve.log &\
+sleep 1s
+
+./target/debug/node-template purge-chain --base-path ./tmp/ferdie --chain local -y;\
+./target/debug/node-template \
+    --base-path ./tmp/ferdie \
+    --chain local \
+    --ferdie \
+    --port 30338 \
+    --ws-port 9950 \
+    --rpc-port 9938 \
+    --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
+    --validator \
+    --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
+    &>./tmp/ferdie.log &\
+sleep 1s
