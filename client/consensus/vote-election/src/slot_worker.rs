@@ -1022,13 +1022,13 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 									// 		bt_map.remove(&tail);
 									// 	}
 									// }
-									log::info!( "Committee.S0: recv vote with hash: {} ({})",vote_data.hash, bt_map.len());
+									// log::info!( "Committee.S0: recv vote with hash: {} ({})",vote_data.hash, bt_map.len());
 									// log::info!(
 									// 	"Committee.S0: recv vote with hash: {} ({}), \npub: {:?}\nsig: {:?}",
 									// 	vote_data.hash,
 									// 	bt_map.len(),
-									// 	vote_data.pub_bytes,
-									// 	vote_data.sig_bytes
+									// 	&vote_data.pub_bytes[0..2],
+									// 	&vote_data.sig_bytes[0..2]
 									// );
 								}
 								else{
@@ -1037,13 +1037,13 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 									root_vote_map.insert(vote_data.hash, new_bt_map);
 
 									// log::info!("Committee.S0: root_vote_map insert: {} (1)", vote_data.hash);
-									log::info!("Committee.S0: recv vote with hash: {} (1)", vote_data.hash);
+									// log::info!("Committee.S0: recv vote with hash: {} (1)", vote_data.hash);
 									// log::info!(
 									// 	"Committee.S0: recv vote with hash: {} ({}), \npub: {:?}\nsig: {:?}",
 									// 	vote_data.hash,
 									// 	1,
-									// 	vote_data.pub_bytes,
-									// 	vote_data.sig_bytes
+									// 	&vote_data.pub_bytes[0..2],
+									// 	&vote_data.sig_bytes[0..2]
 									// );
 								}
 							}
@@ -1130,14 +1130,28 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 								if let Some(bt_map) = root_vote_map.get_mut(&vote_data.hash){
 									bt_map.insert(sig_big_uint, vote_data.clone());
 
-									log::info!("Committee.S1: recv vote with hash: {} ({})", vote_data.hash, bt_map.len());
+									// log::info!("Committee.S1: recv vote with hash: {} ({})", vote_data.hash, bt_map.len());
+									// log::info!(
+									// 	"Committee.S0: recv vote with hash: {} ({}), \npub: {:?}\nsig: {:?}",
+									// 	vote_data.hash,
+									// 	bt_map.len(),
+									// 	&vote_data.pub_bytes[0..2],
+									// 	&vote_data.sig_bytes[0..2]
+									// );
 								}
 								else{
 									let mut new_bt_map = BTreeMap::new();
 									new_bt_map.insert(sig_big_uint, vote_data.clone());
 									root_vote_map.insert(vote_data.hash, new_bt_map);
 
-									log::info!("Committee.S1: recv vote with hash: {} (1)", vote_data.hash);
+									// log::info!("Committee.S1: recv vote with hash: {} (1)", vote_data.hash);
+									// log::info!(
+									// 	"Committee.S0: recv vote with hash: {} ({}), \npub: {:?}\nsig: {:?}",
+									// 	vote_data.hash,
+									// 	1,
+									// 	&vote_data.pub_bytes[0..2],
+									// 	&vote_data.sig_bytes[0..2]
+									// );
 								}
 							}
 							else{

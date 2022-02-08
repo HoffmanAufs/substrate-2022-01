@@ -5,9 +5,9 @@ bootnode_peer_id="12D3KooWSjHPoEtyQoJBW2MtARYwkikZv66gGhqnV5GESqANu4Le"
 ./target/debug/node-template \
     --base-path ./tmp/N01 \
     --chain ./tmp/RawAuraSpec.json \
-    --port 30333 \
-    --ws-port 9945 \
-    --rpc-port 9933 \
+    --port 30353 \
+    --ws-port 9965 \
+    --rpc-port 9953 \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
@@ -19,9 +19,9 @@ sleep 1s
 ./target/debug/node-template \
     --base-path ./tmp/N02 \
     --chain ./tmp/RawAuraSpec.json \
-    --port 30334 \
-    --ws-port 9946 \
-    --rpc-port 9934 \
+    --port 30354 \
+    --ws-port 9966 \
+    --rpc-port 9954 \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
@@ -33,9 +33,9 @@ sleep 1s
 ./target/debug/node-template \
     --base-path ./tmp/N03 \
     --chain ./tmp/RawAuraSpec.json \
-    --port 30335 \
-    --ws-port 9947 \
-    --rpc-port 9935 \
+    --port 30355 \
+    --ws-port 9967 \
+    --rpc-port 9955 \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
@@ -47,9 +47,9 @@ sleep 1s
 ./target/debug/node-template \
     --base-path ./tmp/N04 \
     --chain ./tmp/RawAuraSpec.json \
-    --port 30336 \
-    --ws-port 9948 \
-    --rpc-port 9936 \
+    --port 30356 \
+    --ws-port 9968 \
+    --rpc-port 9956 \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
@@ -61,9 +61,9 @@ sleep 1s
 ./target/debug/node-template \
     --base-path ./tmp/N05 \
     --chain ./tmp/RawAuraSpec.json \
-    --port 30337 \
-    --ws-port 9949 \
-    --rpc-port 9937 \
+    --port 30357 \
+    --ws-port 9969 \
+    --rpc-port 9957 \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
@@ -75,9 +75,9 @@ sleep 1s
 ./target/debug/node-template \
     --base-path ./tmp/N06 \
     --chain ./tmp/RawAuraSpec.json \
-    --port 30338 \
-    --ws-port 9950 \
-    --rpc-port 9938 \
+    --port 30358 \
+    --ws-port 9970 \
+    --rpc-port 9958 \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
@@ -89,9 +89,9 @@ sleep 1s
 ./target/debug/node-template \
     --base-path ./tmp/N07 \
     --chain ./tmp/RawAuraSpec.json \
-    --port 30339 \
-    --ws-port 9951 \
-    --rpc-port 9939 \
+    --port 30359 \
+    --ws-port 9971 \
+    --rpc-port 9959 \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
@@ -103,9 +103,9 @@ sleep 1s
 ./target/debug/node-template \
     --base-path ./tmp/N08 \
     --chain ./tmp/RawAuraSpec.json \
-    --port 30340 \
-    --ws-port 9952 \
-    --rpc-port 9940 \
+    --port 30360 \
+    --ws-port 9972 \
+    --rpc-port 9960 \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
@@ -117,9 +117,9 @@ sleep 1s
 ./target/debug/node-template \
     --base-path ./tmp/N09 \
     --chain ./tmp/RawAuraSpec.json \
-    --port 30341 \
-    --ws-port 9953 \
-    --rpc-port 9941 \
+    --port 30361 \
+    --ws-port 9973 \
+    --rpc-port 9961 \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
@@ -131,9 +131,9 @@ sleep 1s
 ./target/debug/node-template \
     --base-path ./tmp/N10 \
     --chain ./tmp/RawAuraSpec.json \
-    --port 30342 \
-    --ws-port 9954 \
-    --rpc-port 9942 \
+    --port 30362 \
+    --ws-port 9974 \
+    --rpc-port 9962 \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
@@ -145,9 +145,9 @@ sleep 1s
 ./target/debug/node-template \
     --base-path ./tmp/N11 \
     --chain ./tmp/RawAuraSpec.json \
-    --port 30343 \
-    --ws-port 9955 \
-    --rpc-port 9943 \
+    --port 30363 \
+    --ws-port 9975 \
+    --rpc-port 9963 \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
@@ -159,9 +159,9 @@ sleep 1s
 ./target/debug/node-template \
     --base-path ./tmp/N12 \
     --chain ./tmp/RawAuraSpec.json \
-    --port 30344 \
-    --ws-port 9956 \
-    --rpc-port 9944 \
+    --port 30364 \
+    --ws-port 9976 \
+    --rpc-port 9964 \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
@@ -173,9 +173,9 @@ sleep 1s
 ./target/debug/node-template \
     --base-path ./tmp/N13 \
     --chain ./tmp/RawAuraSpec.json \
-    --port 30345 \
-    --ws-port 9957 \
-    --rpc-port 9945 \
+    --port 30365 \
+    --ws-port 9977 \
+    --rpc-port 9965 \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
@@ -187,9 +187,9 @@ sleep 1s
 ./target/debug/node-template \
     --base-path ./tmp/N14 \
     --chain ./tmp/RawAuraSpec.json \
-    --port 30346 \
-    --ws-port 9958 \
-    --rpc-port 9946 \
+    --port 30366 \
+    --ws-port 9978 \
+    --rpc-port 9966 \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
@@ -201,9 +201,9 @@ sleep 1s
 ./target/debug/node-template \
     --base-path ./tmp/N15 \
     --chain ./tmp/RawAuraSpec.json \
-    --port 30347 \
-    --ws-port 9959 \
-    --rpc-port 9947 \
+    --port 30367 \
+    --ws-port 9979 \
+    --rpc-port 9967 \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
@@ -215,9 +215,9 @@ sleep 1s
 ./target/debug/node-template \
     --base-path ./tmp/N16 \
     --chain ./tmp/RawAuraSpec.json \
-    --port 30348 \
-    --ws-port 9960 \
-    --rpc-port 9948 \
+    --port 30368 \
+    --ws-port 9980 \
+    --rpc-port 9968 \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
@@ -229,9 +229,9 @@ sleep 1s
 ./target/debug/node-template \
     --base-path ./tmp/N17 \
     --chain ./tmp/RawAuraSpec.json \
-    --port 30349 \
-    --ws-port 9961 \
-    --rpc-port 9949 \
+    --port 30369 \
+    --ws-port 9981 \
+    --rpc-port 9969 \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
@@ -243,9 +243,9 @@ sleep 1s
 ./target/debug/node-template \
     --base-path ./tmp/N18 \
     --chain ./tmp/RawAuraSpec.json \
-    --port 30350 \
-    --ws-port 9962 \
-    --rpc-port 9950 \
+    --port 30370 \
+    --ws-port 9982 \
+    --rpc-port 9970 \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
@@ -257,9 +257,9 @@ sleep 1s
 ./target/debug/node-template \
     --base-path ./tmp/N19 \
     --chain ./tmp/RawAuraSpec.json \
-    --port 30351 \
-    --ws-port 9963 \
-    --rpc-port 9951 \
+    --port 30371 \
+    --ws-port 9983 \
+    --rpc-port 9971 \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
@@ -271,9 +271,9 @@ sleep 1s
 ./target/debug/node-template \
     --base-path ./tmp/N20 \
     --chain ./tmp/RawAuraSpec.json \
-    --port 30352 \
-    --ws-port 9964 \
-    --rpc-port 9952 \
+    --port 30372 \
+    --ws-port 9984 \
+    --rpc-port 9972 \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
