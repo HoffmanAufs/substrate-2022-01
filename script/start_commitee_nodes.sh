@@ -1,4 +1,4 @@
-bootnode_peer_id="12D3KooWSjHPoEtyQoJBW2MtARYwkikZv66gGhqnV5GESqANu4Le"
+bootnode_peer_id="12D3KooWJThfTb9iRQooS1UwCLA3vpyiGYGwHyxswzK19v2ENgbm"
 
 # 启动节点1
 # 按照生成的Raw配置文件启动node-template
@@ -12,7 +12,7 @@ bootnode_peer_id="12D3KooWSjHPoEtyQoJBW2MtARYwkikZv66gGhqnV5GESqANu4Le"
     --validator \
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
-    --name C01 &>>./tmp/C01.log &\
+    --name C01 &>./tmp/C01.log &\
 sleep 1s
 
 # 启动节点2
@@ -28,7 +28,7 @@ sleep 1s
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
-    --name C02 &>>./tmp/C02.log &\
+    --name C02 &>./tmp/C02.log &\
 sleep 1s
 
 # 启动节点3
@@ -44,7 +44,7 @@ sleep 1s
     --rpc-methods Unsafe \
 --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
-    --name C03 &>>./tmp/C03.log &\
+    --name C03 &>./tmp/C03.log &\
 sleep 1s
 
 # 启动节点4
@@ -60,7 +60,7 @@ sleep 1s
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
-    --name C04 &>>./tmp/C04.log &\
+    --name C04 &>./tmp/C04.log &\
 sleep 1s
 
 # 启动节点5
@@ -76,7 +76,7 @@ sleep 1s
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
-    --name C05 &>>./tmp/C05.log &\
+    --name C05 &>./tmp/C05.log &\
 sleep 1s
 
 # 启动节点6
@@ -92,7 +92,7 @@ sleep 1s
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
-    --name C06 &>>./tmp/C06.log &\
+    --name C06 &>./tmp/C06.log &\
 sleep 1s
 
 # 启动节点7
@@ -108,7 +108,7 @@ sleep 1s
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
-    --name C07 &>>./tmp/C07.log &\
+    --name C07 &>./tmp/C07.log &\
 sleep 1s
 
 # 启动节点8
@@ -124,37 +124,37 @@ sleep 1s
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
-    --name C08 &>>./tmp/C08.log &\
+    --name C08 &>./tmp/C08.log &\
 sleep 1s
 
-# 启动节点9
-# 按照生成的Raw配置文件启动node-template
-./target/debug/node-template purge-chain --base-path ./tmp/C09 --chain local -y;\
-./target/debug/node-template \
-    --base-path ./tmp/C09 \
-    --chain ./tmp/RawAuraSpec.json \
-    --port 30341 \
-    --ws-port 9953 \
-    --rpc-port 9941 \
-    --validator \
-    --rpc-methods Unsafe \
-    --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
-    --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
-    --name C09 &>>./tmp/C09.log &\
-sleep 1s
+# # 启动节点9
+# # 按照生成的Raw配置文件启动node-template
+# ./target/debug/node-template purge-chain --base-path ./tmp/C09 --chain local -y;\
+# ./target/debug/node-template \
+#     --base-path ./tmp/C09 \
+#     --chain ./tmp/RawAuraSpec.json \
+#     --port 30341 \
+#     --ws-port 9953 \
+#     --rpc-port 9941 \
+#     --validator \
+#     --rpc-methods Unsafe \
+#     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
+#     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
+#     --name C09 &>./tmp/C09.log &\
+# sleep 1s
 
-# 启动节点10
-# 按照生成的Raw配置文件启动node-template
-./target/debug/node-template purge-chain --base-path ./tmp/C10 --chain local -y;\
-./target/debug/node-template \
-    --base-path ./tmp/C10 \
-    --chain ./tmp/RawAuraSpec.json \
-    --port 30342 \
-    --ws-port 9954 \
-    --rpc-port 9942 \
-    --validator \
-    --rpc-methods Unsafe \
-    --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
-    --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
-    --name C10 &>>./tmp/C10.log &\
-sleep 1s
+# # 启动节点10
+# # 按照生成的Raw配置文件启动node-template
+# ./target/debug/node-template purge-chain --base-path ./tmp/C10 --chain local -y;\
+# ./target/debug/node-template \
+#     --base-path ./tmp/C10 \
+#     --chain ./tmp/RawAuraSpec.json \
+#     --port 30342 \
+#     --ws-port 9954 \
+#     --rpc-port 9942 \
+#     --validator \
+#     --rpc-methods Unsafe \
+#     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
+#     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
+#     --name C10 &>./tmp/C10.log &\
+# sleep 1s

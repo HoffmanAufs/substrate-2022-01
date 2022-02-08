@@ -844,7 +844,7 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 					futures::select!{
 						block = imported_blocks_stream.next()=>{
 							if let Some(block) = block{
-								log::info!("Author.S1, import block: {}", block.hash);
+								log::info!("Author.S1, Import block: {}", block.hash);
 								if sync_oracle.is_major_syncing(){
 									state = AuthorState::WaitStart;
 									break;
