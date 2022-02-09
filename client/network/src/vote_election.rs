@@ -310,8 +310,8 @@ impl<B: BlockT + 'static, H: ExHashT> VoteElectionHandler<B, H> {
 	}
 
 	fn propagate_election(&mut self, election_data: ElectionData<B>){
-
 		let mut propagated_numbers = 0;
+		let hash = election_data.hash.clone();
 		// let to_send = VoteElectionNotification::VoteV2(vote_data).encode();
 		let to_send = VoteElectionNotification::Election(election_data).encode();
 
@@ -339,6 +339,8 @@ impl<B: BlockT + 'static, H: ExHashT> VoteElectionHandler<B, H> {
 			}
 		);
 
+		// log::info!("♓ Propagate election({}) to {} peers", hash, propagated_numbers);
+
 		if let Some(ref metriecs) = self.metrics {
 			metriecs.propagated_numbers.inc_by(propagated_numbers as _)
 		}
@@ -347,6 +349,7 @@ impl<B: BlockT + 'static, H: ExHashT> VoteElectionHandler<B, H> {
 	fn propagate_vote(&mut self, vote_data: VoteData<B>){
 		// log::info!("{:?}", vote_data);
 		let mut propagated_numbers = 0;
+		let hash = vote_data.hash.clone();
 
 		let to_send = VoteElectionNotification::Vote(vote_data).encode();
 
@@ -373,6 +376,8 @@ impl<B: BlockT + 'static, H: ExHashT> VoteElectionHandler<B, H> {
 				messages: vec![(self.protocol_name.clone(), Bytes::from(to_send.clone()))],
 			}
 		);
+
+		// ::info!("♓ Propagate vote ({}) to {} peers", hash, propagated_numbers);
 
 		if let Some(ref metriecs) = self.metrics {
 			metriecs.propagated_numbers.inc_by(propagated_numbers as _)

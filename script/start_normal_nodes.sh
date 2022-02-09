@@ -12,7 +12,7 @@ bootnode_peer_id="12D3KooWJThfTb9iRQooS1UwCLA3vpyiGYGwHyxswzK19v2ENgbm"
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     --name N01 &>./tmp/N01.log &\
-sleep 1s
+sleep 0.1s
 
 # Node2
 ./target/debug/node-template purge-chain --base-path ./tmp/N02 --chain local -y;\
@@ -26,7 +26,7 @@ sleep 1s
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     --name N02 &>./tmp/N02.log &\
-sleep 1s
+sleep 0.1s
 
 # Node3
 ./target/debug/node-template purge-chain --base-path ./tmp/N03 --chain local -y;\
@@ -40,7 +40,7 @@ sleep 1s
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     --name N03 &>./tmp/N03.log &\
-sleep 1s
+sleep 0.1s
 
 # Node4
 ./target/debug/node-template purge-chain --base-path ./tmp/N04 --chain local -y;\
@@ -54,7 +54,7 @@ sleep 1s
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     --name N04 &>./tmp/N04.log &\
-sleep 1s
+sleep 0.1s
 
 # Node5
 ./target/debug/node-template purge-chain --base-path ./tmp/N05 --chain local -y;\
@@ -68,7 +68,7 @@ sleep 1s
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     --name N05 &>./tmp/N05.log &\
-sleep 1s
+sleep 0.1s
 
 # Node6
 ./target/debug/node-template purge-chain --base-path ./tmp/N06 --chain local -y;\
@@ -82,7 +82,7 @@ sleep 1s
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     --name N06 &>./tmp/N06.log &\
-sleep 1s
+sleep 0.1s
 
 # Node7
 ./target/debug/node-template purge-chain --base-path ./tmp/N07 --chain local -y;\
@@ -96,7 +96,7 @@ sleep 1s
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     --name N07 &>./tmp/N07.log &\
-sleep 1s
+sleep 0.1s
 
 # Node8
 ./target/debug/node-template purge-chain --base-path ./tmp/N08 --chain local -y;\
@@ -110,7 +110,7 @@ sleep 1s
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     --name N08 &>./tmp/N08.log &\
-sleep 1s
+sleep 0.1s
 
 # Node9
 ./target/debug/node-template purge-chain --base-path ./tmp/N09 --chain local -y;\
@@ -124,7 +124,7 @@ sleep 1s
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     --name N09 &>./tmp/N09.log &\
-sleep 1s
+sleep 0.1s
 
 # Node10
 ./target/debug/node-template purge-chain --base-path ./tmp/N10 --chain local -y;\
@@ -138,7 +138,7 @@ sleep 1s
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     --name N10 &>./tmp/N10.log &\
-sleep 1s
+sleep 0.1s
 
 # Node11
 ./target/debug/node-template purge-chain --base-path ./tmp/N11 --chain local -y;\
@@ -152,7 +152,7 @@ sleep 1s
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     --name N11 &>./tmp/N11.log &\
-sleep 1s
+sleep 0.1s
 
 # Node12
 ./target/debug/node-template purge-chain --base-path ./tmp/N12 --chain local -y;\
@@ -166,7 +166,7 @@ sleep 1s
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     --name N12 &>./tmp/N12.log &\
-sleep 1s
+sleep 0.1s
 
 # # Node13
 # ./target/debug/node-template purge-chain --base-path ./tmp/N13 --chain local -y;\
@@ -180,7 +180,7 @@ sleep 1s
 #     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
 #     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 #     --name N13 &>./tmp/N13.log &\
-# sleep 1s
+# sleep 0.1s
 
 # # Node14
 # ./target/debug/node-template purge-chain --base-path ./tmp/N14 --chain local -y;\
@@ -194,7 +194,7 @@ sleep 1s
 #     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
 #     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 #     --name N14 &>./tmp/N14.log &\
-# sleep 1s
+# sleep 0.1s
 
 # # Node15
 # ./target/debug/node-template purge-chain --base-path ./tmp/N15 --chain local -y;\
@@ -208,7 +208,7 @@ sleep 1s
 #     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
 #     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 #     --name N15 &>./tmp/N15.log &\
-# sleep 1s
+# sleep 0.1s
 
 # # Node16
 # ./target/debug/node-template purge-chain --base-path ./tmp/N16 --chain local -y;\
@@ -222,7 +222,7 @@ sleep 1s
 #     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
 #     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 #     --name N16 &>./tmp/N16.log &\
-# sleep 1s
+# sleep 0.1s
 
 # # Node17
 # ./target/debug/node-template purge-chain --base-path ./tmp/N17 --chain local -y;\
@@ -236,7 +236,7 @@ sleep 1s
 #     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
 #     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 #     --name N17 &>./tmp/N17.log &\
-# sleep 1s
+# sleep 0.1s
 
 # # Node18
 # ./target/debug/node-template purge-chain --base-path ./tmp/N18 --chain local -y;\
@@ -250,7 +250,7 @@ sleep 1s
 #     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
 #     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 #     --name N18 &>./tmp/N18.log &\
-# sleep 1s
+# sleep 0.1s
 
 # # Node19
 # ./target/debug/node-template purge-chain --base-path ./tmp/N19 --chain local -y;\
@@ -264,7 +264,7 @@ sleep 1s
 #     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
 #     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 #     --name N19 &>./tmp/N19.log &\
-# sleep 1s
+# sleep 0.1s
 
 # # Node20
 # ./target/debug/node-template purge-chain --base-path ./tmp/N20 --chain local -y;\

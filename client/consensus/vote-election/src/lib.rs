@@ -1109,10 +1109,11 @@ where
 fn caculate_election_weight_value(rank_vec: &Vec<usize>, max_vote_rank: usize)->u64{
 	let mut ret = 0;
 	let mut base = 1;
+	let base_step = max_vote_rank+1;
 
 	for rank in rank_vec.iter().rev(){
-		ret += rank  * base;
-		base *= max_vote_rank as usize;
+		ret += rank * base;
+		base *= base_step;
 	}
 	ret as u64
 }

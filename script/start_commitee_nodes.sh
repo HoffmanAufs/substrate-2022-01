@@ -13,7 +13,7 @@ bootnode_peer_id="12D3KooWJThfTb9iRQooS1UwCLA3vpyiGYGwHyxswzK19v2ENgbm"
     --rpc-methods Unsafe \
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --name C01 &>./tmp/C01.log &\
-sleep 1s
+sleep 0.1s
 
 # 启动节点2
 # 按照生成的Raw配置文件启动node-template
@@ -29,7 +29,7 @@ sleep 1s
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     --name C02 &>./tmp/C02.log &\
-sleep 1s
+sleep 0.1s
 
 # 启动节点3
 # 按照生成的Raw配置文件启动node-template
@@ -45,7 +45,7 @@ sleep 1s
 --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     --name C03 &>./tmp/C03.log &\
-sleep 1s
+sleep 0.1s
 
 # 启动节点4
 # 按照生成的Raw配置文件启动node-template
@@ -61,7 +61,7 @@ sleep 1s
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     --name C04 &>./tmp/C04.log &\
-sleep 1s
+sleep 0.1s
 
 # 启动节点5
 # 按照生成的Raw配置文件启动node-template
@@ -77,7 +77,7 @@ sleep 1s
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     --name C05 &>./tmp/C05.log &\
-sleep 1s
+sleep 0.1s
 
 # 启动节点6
 # 按照生成的Raw配置文件启动node-template
@@ -93,7 +93,7 @@ sleep 1s
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     --name C06 &>./tmp/C06.log &\
-sleep 1s
+sleep 0.1s
 
 # 启动节点7
 # 按照生成的Raw配置文件启动node-template
@@ -109,7 +109,7 @@ sleep 1s
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     --name C07 &>./tmp/C07.log &\
-sleep 1s
+sleep 0.1s
 
 # 启动节点8
 # 按照生成的Raw配置文件启动node-template
@@ -125,7 +125,7 @@ sleep 1s
     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     --name C08 &>./tmp/C08.log &\
-sleep 1s
+sleep 0.1s
 
 # # 启动节点9
 # # 按照生成的Raw配置文件启动node-template
@@ -141,7 +141,7 @@ sleep 1s
 #     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
 #     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 #     --name C09 &>./tmp/C09.log &\
-# sleep 1s
+# sleep 0.1s
 
 # # 启动节点10
 # # 按照生成的Raw配置文件启动node-template
@@ -157,4 +157,4 @@ sleep 1s
 #     --telemetry-url 'wss://telemetry.polkadot.io/submit/ 0' \
 #     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
 #     --name C10 &>./tmp/C10.log &\
-# sleep 1s
+# sleep 0.1s

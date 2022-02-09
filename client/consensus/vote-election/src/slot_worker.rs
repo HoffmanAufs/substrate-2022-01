@@ -842,7 +842,7 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 						let rest_millis = ((last_rest_millis as f32) * rest_timeout_rate) as u64;
 						rest_timeout_duration = Duration::from_millis(rest_millis);
 					}
-					// log::info!("rest timeout duration: {:?}", rest_timeout_duration);
+					
 					let timeout = Delay::new(rest_timeout_duration);
 					if election_vec.len()==4{
 						log::info!("Author.S1, timeout: {:?}, rest_rate: {}", rest_timeout_duration, rest_timeout_rate);
@@ -924,12 +924,22 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 									0.01
 								}
 								else{
-									0.02f32.max(
+									0.05f32.max(
 										(cur_election_weight - min_election_weight) as f32 /
 										(max_election_weight - min_election_weight) as f32
 									)
 								}
 							};
+
+							// if election_vec.len() == 4{
+							// 	log::info!(
+							// 		"Author.S1, cur:{}, min:{}, max:{}, rate: {}",
+							// 		cur_election_weight,
+							// 		min_election_weight,
+							// 		max_election_weight,
+							// 		rest_timeout_rate,
+							// 	);
+							// }
 							continue;
 						},
 						_ = timeout.fuse()=>{

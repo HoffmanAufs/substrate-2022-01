@@ -14,7 +14,7 @@ bootnode_peer_id="12D3KooWEyoppNCUx8Yx66oV9fJnriXwCcXwDDUA2kj6vnc6iDEp"
     --validator \
     --node-key 0000000000000000000000000000000000000000000000000000000000000001 \
     &>./tmp/alice.log &\
-sleep 1s
+sleep 0.1s
 
 ./target/debug/node-template purge-chain --base-path ./tmp/bob --chain local -y;\
 ./target/debug/node-template \
@@ -28,7 +28,7 @@ sleep 1s
     --validator \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     &>./tmp/bob.log &\
-sleep 1s
+sleep 0.1s
 
 ./target/debug/node-template purge-chain --base-path ./tmp/charlie --chain local -y;\
 ./target/debug/node-template \
@@ -42,7 +42,7 @@ sleep 1s
     --validator \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     &>./tmp/charlie.log &\
-sleep 1s
+sleep 0.1s
 
 ./target/debug/node-template purge-chain --base-path ./tmp/dave --chain local -y;\
 ./target/debug/node-template \
@@ -56,7 +56,7 @@ sleep 1s
     --validator \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     &>./tmp/dave.log &\
-sleep 1s
+sleep 0.1s
 
 ./target/debug/node-template purge-chain --base-path ./tmp/eve --chain local -y;\
 ./target/debug/node-template \
@@ -70,7 +70,7 @@ sleep 1s
     --validator \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     &>./tmp/eve.log &\
-sleep 1s
+sleep 0.1s
 
 ./target/debug/node-template purge-chain --base-path ./tmp/ferdie --chain local -y;\
 ./target/debug/node-template \
@@ -84,4 +84,4 @@ sleep 1s
     --validator \
     --bootnodes /ip4/127.0.0.1/tcp/30333/p2p/$bootnode_peer_id \
     &>./tmp/ferdie.log &\
-sleep 1s
+sleep 0.1s
