@@ -112,6 +112,7 @@ type AuthorityId<P> = <P as Pair>::Public;
 pub type SlotDuration = slot_worker::SlotDuration<sp_consensus_vote_election::SlotDuration>;
 
 pub const MAX_VOTE_RANK :usize = 5;
+pub const COMMITTEE_TIMEOUT :u64 = 8;
 
 /// Get type of `SlotDuration` for Aura.
 pub fn slot_duration<A, B, C>(client: &C) -> CResult<SlotDuration>

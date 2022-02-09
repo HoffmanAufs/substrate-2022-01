@@ -29,7 +29,7 @@ pub use crate::{
 	// aux_schema::{MAX_SLOT_CAPACITY, PRUNING_BOUND},
 	slots::{SlotInfo}
 };
-use crate::{slots::Slots, MAX_VOTE_RANK};
+use crate::{slots::Slots, MAX_VOTE_RANK, COMMITTEE_TIMEOUT};
 
 use codec::{Codec, Decode, Encode};
 
@@ -817,7 +817,7 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 
 				let mut election_vec = vec![];
 
-				let full_timeout_duration = Duration::from_secs(15*3);
+				let full_timeout_duration = Duration::from_secs(COMMITTEE_TIMEOUT*3);
 				let start_time = SystemTime::now();
 				let mut rest_timeout_rate = 1f32;
 				// let mut imported_block_election_weight_info = None;
@@ -844,6 +844,9 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 					}
 					// log::info!("rest timeout duration: {:?}", rest_timeout_duration);
 					let timeout = Delay::new(rest_timeout_duration);
+					if election_vec.len()==4{
+						log::info!("Author.S1, timeout: {:?}, rest_rate: {}", rest_timeout_duration, rest_timeout_rate);
+					}
 
 					futures::select!{
 						block = imported_blocks_stream.next()=>{
@@ -877,8 +880,8 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 									if new_block_election_info.random < local_random {
 										log::info!(
 											"Author.S1, block #{} ({}) outside with smaller random",
-											block.hash,
 											block.header.number(),
+											block.hash,
 										);
 										state = AuthorState::WaitProposal(block.header);
 										break;
@@ -916,16 +919,17 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 								None => max_election_weight,
 							};
 
-							rest_timeout_rate = {
+							rest_timeout_rate = 0.01 + {
 								if cur_election_weight <= min_election_weight{
 									0.0
 								}
 								else{
-									(cur_election_weight - min_election_weight) as f32 /
-									(max_election_weight - min_election_weight) as f32
+									0.02f32.max(
+										(cur_election_weight - min_election_weight) as f32 /
+										(max_election_weight - min_election_weight) as f32
+									)
 								}
 							};
-
 							continue;
 						},
 						_ = timeout.fuse()=>{
@@ -1109,11 +1113,12 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 			},
 			CommitteeState::RecvVote(cur_header)=>{
 				log::info!(
-					"►CommitteeState::S1 #{} ({}), recv vote and send election",
+					"►CommitteeState::S1 #{} ({}), recv vote and send election, root_map size: {}",
 					cur_header.number(),
 					cur_header.hash(),
+					root_vote_map.len(),
 				);
-				let recv_duration = Duration::from_secs(8);
+				let recv_duration = Duration::from_secs(COMMITTEE_TIMEOUT);
 				let full_timeout_duration = recv_duration;
 				let start_time = SystemTime::now();
 
