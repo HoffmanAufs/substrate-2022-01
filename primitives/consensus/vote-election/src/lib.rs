@@ -120,3 +120,21 @@ impl sp_consensus::SlotData for SlotDuration {
 
 	// const SLOT_KEY: &'static [u8] = b"aura_slot_duration";
 }
+
+// /// Make a VRF transcript from given randomness, slot number and epoch.
+// pub fn make_transcript(msg: &Vec<u8>, slot: Slot, epoch: u64) -> Transcript {
+// 	let mut transcript = Transcript::new(&BABE_ENGINE_ID);
+// 	transcript.append_message(b"chain hash", &msg[..]);
+// 	transcript
+// }
+
+// /// Make a VRF transcript data container
+// #[cfg(feature = "std")]
+// pub fn make_transcript_data(msg: &Vec<u8>) -> VRFTranscriptData {
+// 	VRFTranscriptData {
+// 		label: &BABE_ENGINE_ID,
+// 		items: vec![
+// 			("chain hash", VRFTranscriptValue::Bytes(msg)),
+// 		],
+// 	}
+// }

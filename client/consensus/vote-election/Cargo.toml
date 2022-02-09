@@ -52,6 +52,7 @@ prometheus-endpoint = { package = "substrate-prometheus-endpoint", path = "../..
 libp2p = { version = "0.37.1", default-features = false }
 getrandom = { version = "0.2", features = ["js"], optional = true }
 derive_more = "0.99.2"
+merlin = { version = "2.0", default-features = false }
 
 # We enable it only for web-wasm check
 # See https://docs.rs/getrandom/0.2.1/getrandom/#webassembly-support

@@ -86,11 +86,16 @@ use sp_consensus::{
 use sp_consensus_slots::Slot;
 use sp_core::crypto::{Pair, Public, CryptoTypePublicPair};
 use sp_inherents::CreateInherentDataProviders;
+
 use sp_keystore::{SyncCryptoStore, SyncCryptoStorePtr};
+use sp_keystore::vrf::{VRFTranscriptData, VRFTranscriptValue};
+pub use merlin::Transcript;
+
 use sp_runtime::{
 	generic::BlockId,
 	traits::{Block as BlockT, Header, Member, NumberFor, Zero},
 	DigestItem,
+	ConsensusEngineId,
 };
 
 pub use import_queue::{
@@ -113,6 +118,8 @@ pub type SlotDuration = slot_worker::SlotDuration<sp_consensus_vote_election::Sl
 
 pub const MAX_VOTE_RANK :usize = 5;
 pub const COMMITTEE_TIMEOUT :u64 = 8;
+pub const VOTE_ENGINE_ID : ConsensusEngineId = *b"VOTE";
+pub const VOTE_VRF_PREFIX: &[u8] = b"substrate-vote-vrf";
 
 /// Get type of `SlotDuration` for Aura.
 pub fn slot_duration<A, B, C>(client: &C) -> CResult<SlotDuration>
@@ -840,6 +847,65 @@ where
 				self.sync_oracle.ve_request(VoteElectionRequest::PropagateVote(vote_data));
 
 				return Some(sig_bytes);
+			}
+		}
+		None
+	}
+
+	// fn propagate_vote(&mut self){
+	fn propagate_vote_v2(&mut self, cur_hash: &B::Hash)->Option<Vec<u8>>{
+		let sr25519_public_keys = SyncCryptoStore::sr25519_public_keys(
+			&*self.keystore, 
+			sp_application_crypto::key_types::AURA
+		);
+
+		if sr25519_public_keys.len() == 1{
+			// let verify_public = <AuthorityId<P> as Decode>::decode(&mut sr25519_public_keys[0].to_raw_vec().as_slice()).unwrap();
+			// let public_type_pair = sr25519_public_keys[0].to_public_crypto_pair();
+
+			let msg = cur_hash.clone().encode();
+
+			// if let Ok(Some(sig_bytes)) = SyncCryptoStore::sign_with(
+			// 	&*self.keystore,
+			// 	<AuthorityId<P> as AppKey>::ID,
+			// 	&public_type_pair,
+			// 	&msg,
+			// ){
+			let mut transcript = Transcript::new(&VOTE_ENGINE_ID);
+			transcript.append_message(b"chain hash", &msg.as_slice());
+
+			let transcript_data = VRFTranscriptData {
+				label: &VOTE_ENGINE_ID,
+				items: vec![
+					("chain hash", VRFTranscriptValue::Bytes(msg)),
+				],
+			};
+
+			let public = sr25519_public_keys[0];
+
+			if let Ok(Some(vrf_sig)) = SyncCryptoStore::sr25519_vrf_sign(
+				&*self.keystore,
+				<AuthorityId<P> as AppKey>::ID,
+				&public
+				transcript_data
+			){
+				if let Ok(inout) = vrf_sig.output.attach_input_hash(&public, transcript){
+					let vrf_u128 = u128::from_le_bytes(inout.make_bytes::<[u8; 16]>(VOTE_VRF_PREFIX));
+					log::info!("VRF u128: {}", vrf_u128);
+				}
+				// let pub_bytes = sr25519_public_keys[0].to_raw_vec();
+				// let sig_bytes = signature.encode();
+				// let vote_data = <VoteData<B>>::new(sig_bytes.clone(), cur_hash.clone(), pub_bytes);
+				// self.sync_oracle.ve_request(VoteElectionRequest::PropagateVote(vote_data));
+
+				// return Some(sig_bytes);
+				// log::info!("VRF: output: {:?}\nproof: {:?}\n{}", vrf_sig.output, vrf_sig.proof, cur_hash);
+				log::info!("Hash: {}", cur_hash);
+				log::info!("VRF Output: {:?}", vrf_sig.output);
+				log::info!("VRF Proof: {:?}", vrf_sig.proof);
+			}
+			else{
+				log::info!("VRF signature failed");
 			}
 		}
 		None

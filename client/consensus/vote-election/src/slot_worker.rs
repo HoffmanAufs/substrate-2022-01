@@ -632,6 +632,8 @@ pub trait SimpleSlotWorker<B: BlockT> {
 	/// no doc
 	fn propagate_vote(&mut self, hash: &B::Hash)->Option<Vec<u8>>;
 	/// no doc
+	fn propagate_vote_v2(&mut self, cur_hash: &B::Hash)->Option<Vec<u8>>;
+	/// no doc
 	fn propagate_election(&mut self, hash: B::Hash, _: Vec<VoteData<B>>);
 	/// no doc
 	fn verify_vote(&mut self, vote_data: &VoteData<B>)->bool;
@@ -806,6 +808,12 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 					cur_header.number(),
 					cur_header.hash(),
 				);
+
+				match worker.propagate_vote_v2(&cur_header.hash()){
+					Some(x)=>log::info!("Some(x)"),
+					_ => {},
+				}
+
 				let rand_bytes = match worker.propagate_vote(&cur_header.hash()){
 					Some(x)=>x,
 					None=>{
@@ -1109,13 +1117,13 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 						},
 						_ = timeout.fuse()=>{
 							if is_init_state == true{
-								if let Some(header) = genesis_header.take(){
-									log::info!("Committee.S0, timeout from init");
-									if worker.is_committee(&header.hash()){
-										state = CommitteeState::RecvVote(header);
-										break;
-									}
-								}
+								// if let Some(header) = genesis_header.take(){
+								// 	log::info!("Committee.S0, timeout from init");
+								// 	if worker.is_committee(&header.hash()){
+								// 		state = CommitteeState::RecvVote(header);
+								// 		break;
+								// 	}
+								// }
 							}
 						}
 					}
