@@ -919,9 +919,9 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 								None => max_election_weight,
 							};
 
-							rest_timeout_rate = 0.01 + {
+							rest_timeout_rate = {
 								if cur_election_weight <= min_election_weight{
-									0.0
+									0.01
 								}
 								else{
 									0.02f32.max(
