@@ -635,7 +635,7 @@ pub trait SimpleSlotWorker<B: BlockT> {
 	/// no doc
 	fn propagate_election(&mut self, hash: B::Hash, _: Vec<VoteData<B>>);
 	/// no doc
-	fn verify_vote(&mut self, vote_data: &VoteData<B>)->Result<u128, &str>;
+	fn verify_vote(&mut self, vote_data: &VoteData<B>)->Result<u128, String>;
 	/// no doc
 	fn verify_election(&mut self, election_data: &ElectionData<B>, hash: &B::Hash)->bool;
 	/// no doc
@@ -654,13 +654,13 @@ pub trait SimpleSlotWorker<B: BlockT> {
 		&mut self,
 		header: &B::Header,
 		election_vec: &Vec<ElectionData<B>>
-	)->Result<u64, &str>;
+	)->Result<u64, String>;
 	/// no doce
-	fn caculate_weight_info_from_header(&mut self, header: &B::Header)->Result<ElectionWeightInfo, &str>;
+	fn caculate_weight_info_from_header(&mut self, header: &B::Header)->Result<ElectionWeightInfo, String>;
 	/// no doce
-	fn caculate_min_max_weight(&mut self, header: &B::Header)->Result<(u64, u64), &str>;
+	fn caculate_min_max_weight(&mut self, header: &B::Header)->Result<(u64, u64), String>;
 	/// no doce
-	fn generate_author_vrf_data(&mut self, cur_hash: &B::Hash)->Result<(u128, VRFSignature), &str>;
+	fn generate_author_vrf_data(&mut self, cur_hash: &B::Hash)->Result<(u128, VRFSignature), String>;
 }
 
 // #[async_trait::async_trait]
