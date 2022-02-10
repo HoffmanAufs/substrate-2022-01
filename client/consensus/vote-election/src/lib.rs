@@ -30,7 +30,7 @@
 //!
 //! NOTE: Aura itself is designed to be generic over the crypto used.
 #![forbid(unsafe_code)]
-#![allow(unused_imports)]
+// #![allow(unused_imports)]
 
 // mod aux_schema;
 mod import_queue;
@@ -45,29 +45,29 @@ use std::{
 	marker::PhantomData,
 	pin::Pin,
 	sync::Arc,
-	time::Duration,
-	thread,
-	str::FromStr,
+	// time::Duration,
+	// thread,
+	// str::FromStr,
 };
 
 use futures::{
-	future::Either,
-	channel::{oneshot, mpsc}, 
-	select, 
-	future,
+	// future::Either,
+	// channel::{oneshot, mpsc}, 
+	// select, 
+	// future,
 	stream::StreamExt,
 	prelude::*,
 };
-use futures_timer::Delay;
-use rand::Rng;
+// use futures_timer::Delay;
+// use rand::Rng;
 
-use log::{debug, error, info, warn, trace};
+use log::{debug, trace};
 
 use codec::{Codec, Decode, Encode};
 
 use slot_worker::{
 	BackoffAuthoringBlocksStrategy, InherentDataProviderExt, SlotInfo, StorageChanges,
-	SlotResult, ElectionWeightInfo,
+	ElectionWeightInfo,
 };
 
 use sc_client_api::{
@@ -75,27 +75,28 @@ use sc_client_api::{
 	BlockOf, UsageProvider, BlockchainEvents, ImportNotifications
 };
 use sc_consensus::{BlockImport, BlockImportParams, ForkChoiceStrategy, StateAction};
-use sc_telemetry::{telemetry, TelemetryHandle, CONSENSUS_DEBUG, CONSENSUS_INFO, CONSENSUS_WARN};
+use sc_telemetry::{TelemetryHandle};
 use sp_api::ProvideRuntimeApi;
 use sp_application_crypto::{AppKey, AppPublic, ByteArray};
 use sp_blockchain::{HeaderBackend, Result as CResult};
 use sp_consensus::{
 	BlockOrigin, CanAuthorWith, Environment, Error as ConsensusError, Proposer, SelectChain,
-	VoteData, VoteElectionRequest, ElectionData,
+	VoteData, ElectionData, VoteElectionRequest,
 };
 use sp_consensus_slots::Slot;
-use sp_core::crypto::{Pair, Public, CryptoTypePublicPair};
+use sp_core::crypto::{Pair, Public};
 use sp_inherents::CreateInherentDataProviders;
 
-use sp_keystore::{SyncCryptoStore, SyncCryptoStorePtr};
-use sp_keystore::vrf::{VRFTranscriptData, VRFTranscriptValue};
-pub use merlin::Transcript;
+use sp_keystore::{SyncCryptoStore, SyncCryptoStorePtr, vrf::VRFSignature};
+use schnorrkel::vrf::{VRFOutput, VRFProof};
+// use sp_keystore::vrf::{VRFTranscriptData, VRFTranscriptValue};
+// pub use merlin::Transcript;
+use schnorrkel::{keys::PublicKey};
 
 use sp_runtime::{
 	generic::BlockId,
 	traits::{Block as BlockT, Header, Member, NumberFor, Zero},
 	DigestItem,
-	ConsensusEngineId,
 };
 
 pub use import_queue::{
@@ -107,9 +108,11 @@ pub use sp_consensus::SyncOracle;
 pub use sp_consensus_vote_election::{
 	digests::{CompatibleDigestItem, PreDigest},
 	inherents::{InherentDataProvider, InherentType as AuraInherent, INHERENT_IDENTIFIER},
-	AuraApi, ConsensusLog, AURA_ENGINE_ID,
+	AuraApi, ConsensusLog, 
+	make_transcript, make_transcript_data, VOTE_VRF_PREFIX,
+
 };
-use num_bigint::BigUint;
+// use num_bigint::BigUint;
 
 type AuthorityId<P> = <P as Pair>::Public;
 
@@ -118,8 +121,8 @@ pub type SlotDuration = slot_worker::SlotDuration<sp_consensus_vote_election::Sl
 
 pub const MAX_VOTE_RANK :usize = 5;
 pub const COMMITTEE_TIMEOUT :u64 = 8;
-pub const VOTE_ENGINE_ID : ConsensusEngineId = *b"VOTE";
-pub const VOTE_VRF_PREFIX: &[u8] = b"substrate-vote-vrf";
+// pub const VOTE_ENGINE_ID : ConsensusEngineId = *b"VOTE";
+// pub const VOTE_VRF_PREFIX: &[u8] = b"substrate-vote-vrf";
 
 /// Get type of `SlotDuration` for Aura.
 pub fn slot_duration<A, B, C>(client: &C) -> CResult<SlotDuration>
@@ -660,8 +663,7 @@ where
 	fn claim_slot_v2(
 		&mut self,
 		slot: Slot,
-		// _epoch_data: &Self::EpochData,
-		rand_bytes: Vec<u8>,
+		vrf_sig: &VRFSignature,
 		election_vec: Vec<ElectionData<B>>,
 	) -> Option<Self::Claim> {
 		let sr25519_public_keys = SyncCryptoStore::sr25519_public_keys(
@@ -675,9 +677,12 @@ where
 			if let Ok(author) = <AuthorityId<P> as Decode>::decode(&mut pub_bytes.as_slice()){
 				let pre_digest = PreDigest{
 					slot,
-					rand_bytes: rand_bytes,
-					pub_bytes: author.to_raw_vec(),
-					election_bytes: election_vec.encode()};
+					// rand_bytes: rand_bytes,
+					pub_key_bytes: author.to_raw_vec(),
+					vrf_output_bytes: vrf_sig.output.to_bytes().encode(),
+					vrf_proof_bytes: vrf_sig.proof.to_bytes().encode(),
+					election_bytes: election_vec.encode()
+				};
 				return Some((pre_digest, author.clone()));
 				// return Some((pre_digest, author.clone()));
 			}
@@ -823,113 +828,146 @@ where
 		)
 	}
 
-	// fn propagate_vote(&mut self){
-	fn propagate_vote(&mut self, cur_hash: &B::Hash)->Option<Vec<u8>>{
+	// // fn propagate_vote(&mut self){
+	// fn propagate_vote_v1(&mut self, cur_hash: &B::Hash)->Option<Vec<u8>>{
+	// 	let sr25519_public_keys = SyncCryptoStore::sr25519_public_keys(
+	// 		&*self.keystore, 
+	// 		sp_application_crypto::key_types::AURA
+	// 	);
+
+	// 	if sr25519_public_keys.len() == 1{
+	// 		// let verify_public = <AuthorityId<P> as Decode>::decode(&mut sr25519_public_keys[0].to_raw_vec().as_slice()).unwrap();
+	// 		let public_type_pair = sr25519_public_keys[0].to_public_crypto_pair();
+
+	// 		let msg = cur_hash.clone().encode();
+
+	// 		if let Ok(Some(sig_bytes)) = SyncCryptoStore::sign_with(
+	// 			&*self.keystore,
+	// 			<AuthorityId<P> as AppKey>::ID,
+	// 			&public_type_pair,
+	// 			&msg,
+	// 		){
+	// 			let pub_bytes = sr25519_public_keys[0].to_raw_vec();
+	// 			let vote_data = <VoteData<B>>::new(sig_bytes.clone(), cur_hash.clone(), pub_bytes);
+	// 			self.sync_oracle.ve_request(VoteElectionRequest::PropagateVote(vote_data));
+
+	// 			return Some(sig_bytes);
+	// 		}
+	// 	}
+	// 	None
+	// }
+
+	fn generate_author_vrf_data(&mut self, cur_hash: &B::Hash)->Result<(u128, VRFSignature), &str>{
 		let sr25519_public_keys = SyncCryptoStore::sr25519_public_keys(
 			&*self.keystore, 
 			sp_application_crypto::key_types::AURA
 		);
 
 		if sr25519_public_keys.len() == 1{
-			// let verify_public = <AuthorityId<P> as Decode>::decode(&mut sr25519_public_keys[0].to_raw_vec().as_slice()).unwrap();
-			let public_type_pair = sr25519_public_keys[0].to_public_crypto_pair();
-
 			let msg = cur_hash.clone().encode();
-
-			if let Ok(Some(sig_bytes)) = SyncCryptoStore::sign_with(
-				&*self.keystore,
-				<AuthorityId<P> as AppKey>::ID,
-				&public_type_pair,
-				&msg,
-			){
-				let pub_bytes = sr25519_public_keys[0].to_raw_vec();
-				let vote_data = <VoteData<B>>::new(sig_bytes.clone(), cur_hash.clone(), pub_bytes);
-				self.sync_oracle.ve_request(VoteElectionRequest::PropagateVote(vote_data));
-
-				return Some(sig_bytes);
-			}
-		}
-		None
-	}
-
-	// fn propagate_vote(&mut self){
-	fn propagate_vote_v2(&mut self, cur_hash: &B::Hash)->Option<Vec<u8>>{
-		let sr25519_public_keys = SyncCryptoStore::sr25519_public_keys(
-			&*self.keystore, 
-			sp_application_crypto::key_types::AURA
-		);
-
-		if sr25519_public_keys.len() == 1{
-			// let verify_public = <AuthorityId<P> as Decode>::decode(&mut sr25519_public_keys[0].to_raw_vec().as_slice()).unwrap();
-			// let public_type_pair = sr25519_public_keys[0].to_public_crypto_pair();
-
-			let msg = cur_hash.clone().encode();
-
-			// if let Ok(Some(sig_bytes)) = SyncCryptoStore::sign_with(
-			// 	&*self.keystore,
-			// 	<AuthorityId<P> as AppKey>::ID,
-			// 	&public_type_pair,
-			// 	&msg,
-			// ){
-			let mut transcript = Transcript::new(&VOTE_ENGINE_ID);
-			transcript.append_message(b"chain hash", &msg.as_slice());
-
-			let transcript_data = VRFTranscriptData {
-				label: &VOTE_ENGINE_ID,
-				items: vec![
-					("chain hash", VRFTranscriptValue::Bytes(msg)),
-				],
-			};
-
-			let public = sr25519_public_keys[0];
+			let transcript = make_transcript(&msg);
+			let transcript_data = make_transcript_data(&msg);
 
 			if let Ok(Some(vrf_sig)) = SyncCryptoStore::sr25519_vrf_sign(
 				&*self.keystore,
 				<AuthorityId<P> as AppKey>::ID,
-				&public
-				transcript_data
+				&sr25519_public_keys[0],
+				transcript_data,
 			){
+				let public = match PublicKey::from_bytes(&sr25519_public_keys[0].to_raw_vec()){
+					Ok(x)=>x,
+					Err(_) => Err("decode public failed")?,
+				};
 				if let Ok(inout) = vrf_sig.output.attach_input_hash(&public, transcript){
-					let vrf_u128 = u128::from_le_bytes(inout.make_bytes::<[u8; 16]>(VOTE_VRF_PREFIX));
-					log::info!("VRF u128: {}", vrf_u128);
+					let vrf_num = u128::from_le_bytes(inout.make_bytes::<[u8; 16]>(VOTE_VRF_PREFIX));
+					// log::info!("VRF u128: {}", vrf_num);
+
+					// let vote_data = VoteDataV2::<B>{
+					// 	hash: cur_hash.clone(),
+					// 	vrf_sig.output.to_bytes().encode(),
+					// 	vrf_sig.proof.to_bytes().encode(),
+					// 	pub_bytes: sr25519_public_keys[0].to_raw_vec(),
+					// };
+
+					return Ok((vrf_num, vrf_sig));
 				}
-				// let pub_bytes = sr25519_public_keys[0].to_raw_vec();
-				// let sig_bytes = signature.encode();
-				// let vote_data = <VoteData<B>>::new(sig_bytes.clone(), cur_hash.clone(), pub_bytes);
-				// self.sync_oracle.ve_request(VoteElectionRequest::PropagateVote(vote_data));
 
-				// return Some(sig_bytes);
-				// log::info!("VRF: output: {:?}\nproof: {:?}\n{}", vrf_sig.output, vrf_sig.proof, cur_hash);
-				log::info!("Hash: {}", cur_hash);
-				log::info!("VRF Output: {:?}", vrf_sig.output);
-				log::info!("VRF Proof: {:?}", vrf_sig.proof);
+				// let vote_data = VoteDataV2::<B>{
+				// 	hash: cur_hash.clone(),
+				// 	vrf_sig.output.to_bytes().encode(),
+				// 	vrf_sig.proof.to_bytes().encode(),
+				// 	pub_bytes: sr25519_public_keys[0].to_raw_vec(),
+				// };
+				// Ok(vote_data)
 			}
 			else{
-				log::info!("VRF signature failed");
+				Err("VRF signature failed")?
 			}
 		}
-		None
+		Err("Public key count not 1")?
 	}
 
-	fn verify_vote(&mut self, vote_data: &VoteData<B>)->bool{
-		let VoteData{hash, sig_bytes, pub_bytes} = vote_data;
-		if let Ok(sig) = <P::Signature as Decode>::decode(&mut sig_bytes.as_slice()){
-			if let Ok(verify_public) = <AuthorityId<P> as Decode>::decode(&mut pub_bytes.as_slice()){
-				let msg = hash.encode();
+	// fn propagate_vote(&mut self){
+	fn propagate_vote(&mut self, vrf_sig :&VRFSignature, cur_hash: &B::Hash){
+		let sr25519_public_keys = SyncCryptoStore::sr25519_public_keys(
+			&*self.keystore, 
+			sp_application_crypto::key_types::AURA
+		);
 
-				let sign_ret = P::verify(&sig, &msg, &verify_public);
-				return sign_ret;
-			}
-			else{
-				log::info!("verfiy_vote() failed, decode public_key failed()");
-				return false;
-			}
-		}
-		else{
-			log::info!("verify_vote() failed, decode vote error");
-			return false;
+		if sr25519_public_keys.len() == 1{
+			let vote_data = VoteData::<B>{
+				hash: cur_hash.clone(),
+				vrf_output_bytes: vrf_sig.output.to_bytes().encode(),
+				vrf_proof_bytes: vrf_sig.proof.to_bytes().encode(),
+				pub_bytes: sr25519_public_keys[0].to_raw_vec(),
+			};
+			self.sync_oracle.ve_request(VoteElectionRequest::PropagateVote(vote_data));
 		}
 	}
+
+	fn verify_vote(self: &mut Self, vote_data: &VoteData<B>)->Result<u128, &str>{
+		let transcript = make_transcript(&vote_data.hash.encode());
+		let vrf_output = match VRFOutput::from_bytes(vote_data.vrf_output_bytes.as_slice()){
+			Ok(x) => x,
+			Err(_) => Err("decode vrf output failed")?,
+		};
+
+		let vrf_proof = match VRFProof::from_bytes(vote_data.vrf_proof_bytes.as_slice()){
+			Ok(x) => x,
+			Err(_) => Err("decode vrf proof failed")?,
+		};
+
+		match schnorrkel::PublicKey::from_bytes(&vote_data.pub_bytes)
+			.and_then(|p|{ p.vrf_verify(transcript, &vrf_output, &vrf_proof)}){
+				Ok((inout, _))=>{
+					let vrf_num= u128::from_le_bytes(inout.make_bytes::<[u8; 16]>(VOTE_VRF_PREFIX));
+					Ok(vrf_num)
+				},
+				Err(_)=>{
+					Err("caculate vrf num failed")
+				}
+			}
+	}
+
+	// fn verify_vote_v1(&mut self, vote_data: &VoteData<B>)->bool{
+	// 	let VoteData{hash, sig_bytes, pub_bytes} = vote_data;
+	// 	if let Ok(sig) = <P::Signature as Decode>::decode(&mut sig_bytes.as_slice()){
+	// 		if let Ok(verify_public) = <AuthorityId<P> as Decode>::decode(&mut pub_bytes.as_slice()){
+	// 			let msg = hash.encode();
+
+	// 			let sign_ret = P::verify(&sig, &msg, &verify_public);
+	// 			return sign_ret;
+	// 		}
+	// 		else{
+	// 			log::info!("verfiy_vote() failed, decode public_key failed()");
+	// 			return false;
+	// 		}
+	// 	}
+	// 	else{
+	// 		log::info!("verify_vote() failed, decode vote error");
+	// 		return false;
+	// 	}
+	// }
 
 	fn verify_election(&mut self, election_data: &ElectionData<B>, &cur_hash: &B::Hash)->bool{
 		// hash_verify
@@ -998,63 +1036,19 @@ where
 				&msg,
 			){
 				let pub_bytes = sr25519_public_keys[0].to_raw_vec();
-				let election_data = <ElectionData<B>>::new(hash, sig_bytes, election_ret, pub_bytes);
+				// let election_data = <ElectionData<B>>::new(hash, sig_bytes, election_ret, pub_bytes);
+				let election_data = ElectionData::<B>{
+					hash,
+					sig_bytes,
+					vote_list: election_ret,
+					committee_pub_bytes: pub_bytes
+				};
 				self.sync_oracle.ve_request(VoteElectionRequest::PropagateElection(election_data));
 			}
 		}
 		else{
 			log::info!("propagate_election failed");
 		}
-	}
-
-	fn update_timeout_duration(&mut self, cur_hash: &B::Hash, election_vec: &Vec<ElectionData<B>>)->f32{
-		let sr25519_public_keys = SyncCryptoStore::sr25519_public_keys(
-			&*self.keystore, 
-			sp_application_crypto::key_types::AURA,
-		);
-
-		if sr25519_public_keys.len() > 0{
-			// let pub_bytes = sr25519_public_keys[0].to_raw_vec();
-
-			if let Ok(committee) = authorities(self.client.as_ref(), &BlockId::Hash(cur_hash.clone())){
-				let pub_bytes = sr25519_public_keys[0].to_raw_vec();
-				let committee_count = committee.len();
-				// let (min_value, max_value) = caculate_min_max_value(committee_count, MAX_VOTE_RANK);
-				let (min_value, max_value) = caculate_min_max_election_weight(committee_count, MAX_VOTE_RANK);
-
-				let mut rank_vec = vec![];
-				for election in election_vec.iter(){
-					if let Some(cur_rank) = election.vote_list.iter().position(|vote|pub_bytes == vote.pub_bytes){
-						rank_vec.push(cur_rank);
-					}
-					else{
-						rank_vec.push(MAX_VOTE_RANK);
-					}
-				}
-
-				while rank_vec.len() < committee_count{
-					rank_vec.push(MAX_VOTE_RANK);
-				}
-
-				rank_vec.sort();
-				let cur_value = caculate_election_weight_value(&rank_vec, MAX_VOTE_RANK);
-
-				let result = {
-					if cur_value < min_value{
-						0f32
-					}
-					else{
-						let full_distance = (max_value - min_value) as f32;
-						let cur_distance = (cur_value - min_value) as f32;
-						cur_distance/full_distance
-					}
-				};
-				log::info!("Author: update_duration: {}, rand_vec: {:?}, {}", result, rank_vec, cur_hash);
-				return result;
-			}
-		}
-
-		1.0
 	}
 
 	// fn caculate_min_weight(&mut self, header: &B::Header)->Result<u64, &str>{
@@ -1088,87 +1082,184 @@ where
 		}
 	}
 
-	fn caculate_weight_info_from_header(&mut self, header:&B::Header)->Result<ElectionWeightInfo<B>, &str>{
-		if let Ok(committee_vec) = authorities(self.client.as_ref(), &BlockId::Hash(header.hash())){
+	fn caculate_weight_info_from_header(
+		&mut self,
+		header:&B::Header
+	)->Result<ElectionWeightInfo, &str>{
+		let committee_list = match authorities(self.client.as_ref(), &BlockId::Hash(header.hash())){
+			Ok(x)=>x,
+			Err(_)=> Err("get committee failed")?,
+		};
+		let pre_digest = match find_pre_digest::<B, P::Signature>(&header){
+			Ok(x)=>x,
+			Err(_)=> Err("find pre_digest failed")?,
+		};
+		// let vrf_num = pre_digest.vrf_num;
+		let vrf_output = match VRFOutput::from_bytes(pre_digest.vrf_output_bytes.as_slice()){
+			Ok(x)=>x,
+			Err(_)=> Err("decode vrf output failed")?,
+		};
+		// let vrf_proof = VRFProof::from_bytes(pre_digest.vrf_proof_bytes.as_slice())?;
 
-			let pre_digest = match find_pre_digest::<B, P::Signature>(&header){
-				Ok(v) => v,
-				Err(_) => return Err("find pre_digest err")
+		let transcript = make_transcript(&header.hash().encode());
+		let public = match PublicKey::from_bytes(pre_digest.pub_key_bytes.as_slice()){
+			Ok(x)=>x,
+			Err(_) => Err("decoe public key failed")?,
+		};
+		let vrf_num = match vrf_output.attach_input_hash(&public, transcript){
+			Ok(inout)=>u128::from_le_bytes(inout.make_bytes::<[u8; 16]>(VOTE_VRF_PREFIX)),
+			Err(_)=> Err("gen vrf number failed")?,
+		};
+		// if let Ok(inout) = vrf_sig.output.attach_input_hash(&public, transcript){
+		// 	let vrf_num = u128::from_le_bytes(inout.make_bytes::<[u8; 16]>(VOTE_VRF_PREFIX));
+
+		let election_bytes = pre_digest.election_bytes;
+		let election_vec = match <Vec<ElectionData<B>>>::decode(&mut election_bytes.as_slice()){
+			Ok(v)=> v,
+			Err(_)=> return Err("election data decode failed"),
+		};
+		
+		let mut rank_vec = vec![];
+		let pub_bytes = pre_digest.pub_key_bytes;
+		for election in election_vec.iter(){
+			let rank = match election.vote_list.iter().position(|vote|vote.pub_bytes == pub_bytes){
+				Some(x) => x,
+				None => MAX_VOTE_RANK,
 			};
-
-			let random_num = BigUint::from_bytes_be(pre_digest.rand_bytes.as_slice());
-			let election_bytes = pre_digest.election_bytes;
-			let election_vec = match <Vec<ElectionData<B>>>::decode(&mut election_bytes.as_slice()){
-				Ok(v)=> v,
-				Err(_)=> return Err("election data decode failed"),
-			};
-			
-			let mut rank_vec = vec![];
-			let pub_bytes = pre_digest.pub_bytes;
-			for election in election_vec.iter(){
-				let rank = match election.vote_list.iter().position(|vote|vote.pub_bytes == pub_bytes){
-					Some(x) => x,
-					None => MAX_VOTE_RANK,
-				};
-				rank_vec.push(rank);
-			}
-
-			let committee_count = committee_vec.len();
-			while rank_vec.len() < committee_count{
-				rank_vec.push(MAX_VOTE_RANK);
-			}
-
-			rank_vec.sort();
-			let election_weight = caculate_election_weight_value(&rank_vec, MAX_VOTE_RANK);
-
-			Ok(ElectionWeightInfo{
-				weight: election_weight,
-				random: random_num,
-				header: header.clone(),
-			})
+			rank_vec.push(rank);
 		}
-		else{
-			return Err("get pallet authority failed");
+
+		let committee_count = committee_list.len();
+		while rank_vec.len() < committee_count{
+			rank_vec.push(MAX_VOTE_RANK);
 		}
-		// Ok((election_weight, random_num))
+
+		rank_vec.sort();
+		let election_weight = caculate_election_weight_value(&rank_vec, MAX_VOTE_RANK);
+
+		Ok(ElectionWeightInfo{
+			weight: election_weight,
+			random: vrf_num,
+		})
 	}
+
+	// fn caculate_weight_info_from_header_v1(&mut self, header:&B::Header)->Result<ElectionWeightInfo<B>, &str>{
+	// 	if let Ok(committee_vec) = authorities(self.client.as_ref(), &BlockId::Hash(header.hash())){
+
+	// 		let pre_digest = match find_pre_digest::<B, P::Signature>(&header){
+	// 			Ok(v) => v,
+	// 			Err(_) => return Err("find pre_digest err")
+	// 		};
+
+	// 		let random_num = BigUint::from_bytes_be(pre_digest.rand_bytes.as_slice());
+	// 		let election_bytes = pre_digest.election_bytes;
+	// 		let election_vec = match <Vec<ElectionData<B>>>::decode(&mut election_bytes.as_slice()){
+	// 			Ok(v)=> v,
+	// 			Err(_)=> return Err("election data decode failed"),
+	// 		};
+			
+	// 		let mut rank_vec = vec![];
+	// 		let pub_bytes = pre_digest.pub_bytes;
+	// 		for election in election_vec.iter(){
+	// 			let rank = match election.vote_list.iter().position(|vote|vote.pub_bytes == pub_bytes){
+	// 				Some(x) => x,
+	// 				None => MAX_VOTE_RANK,
+	// 			};
+	// 			rank_vec.push(rank);
+	// 		}
+
+	// 		let committee_count = committee_vec.len();
+	// 		while rank_vec.len() < committee_count{
+	// 			rank_vec.push(MAX_VOTE_RANK);
+	// 		}
+
+	// 		rank_vec.sort();
+	// 		let election_weight = caculate_election_weight_value(&rank_vec, MAX_VOTE_RANK);
+
+	// 		Ok(ElectionWeightInfo{
+	// 			weight: election_weight,
+	// 			random: random_num,
+	// 			header: header.clone(),
+	// 		})
+	// 	}
+	// 	else{
+	// 		return Err("get pallet authority failed");
+	// 	}
+	// 	// Ok((election_weight, random_num))
+	// }
 
 	fn caculate_weight_from_elections(
 		&mut self,
 		header: &B::Header,
 		election_vec: &Vec<ElectionData<B>>,
-	)->Option<u64> {
-		if let Ok(committee_vec) = authorities(self.client.as_ref(), &BlockId::Hash(header.hash())){
-			let sr25519_public_keys = SyncCryptoStore::sr25519_public_keys(
-				&*self.keystore, 
-				sp_application_crypto::key_types::AURA,
-			);
+	)->Result<u64, &str> {
+		let committee_list = match authorities(self.client.as_ref(), &BlockId::Hash(header.hash())){
+			Ok(v)=>v,
+			Err(_)=>Err("Get committee failed")?,
+		};
 
-			if sr25519_public_keys.len() > 0{
-				let pub_bytes = sr25519_public_keys[0].to_raw_vec();
+		let sr25519_public_keys = SyncCryptoStore::sr25519_public_keys(
+			&*self.keystore, 
+			sp_application_crypto::key_types::AURA,
+		);
 
-				let mut rank_vec = vec![];
-				for election in election_vec.iter(){
-					let rank = match election.vote_list.iter().position(|vote|vote.pub_bytes == pub_bytes){
-						Some(x) if x < MAX_VOTE_RANK =>x,
-						_ => MAX_VOTE_RANK,
-					};
-					rank_vec.push(rank);
-				}
+		if sr25519_public_keys.len() > 0{
+			let pub_bytes = sr25519_public_keys[0].to_raw_vec();
 
-				let committee_count = committee_vec.len();
-				while rank_vec.len() < committee_count{
-					rank_vec.push(MAX_VOTE_RANK);
-				}
-
-				rank_vec.sort();
-				log::info!("{:?}, election result", rank_vec);
-				let weight = caculate_election_weight_value(&rank_vec, MAX_VOTE_RANK);
-
-				return Some(weight);
+			let mut rank_vec = vec![];
+			for election in election_vec.iter(){
+				let rank = match election.vote_list.iter().position(|vote|vote.pub_bytes == pub_bytes){
+					Some(x) if x < MAX_VOTE_RANK => x,
+					_ => MAX_VOTE_RANK,
+				};
+				rank_vec.push(rank);
 			}
+
+			let committee_count = committee_list.len();
+			while rank_vec.len() < committee_count{
+				rank_vec.push(MAX_VOTE_RANK);
+			}
+
+			rank_vec.sort();
+			log::info!("{:?}, election result", rank_vec);
+			let weight = caculate_election_weight_value(&rank_vec, MAX_VOTE_RANK);
+
+			return Ok(weight);
 		}
-		None
+
+		Err("public_key count = 0")?
+
+		// if let Ok(committee_vec) = authorities(self.client.as_ref(), &BlockId::Hash(header.hash())){
+		// 	let sr25519_public_keys = SyncCryptoStore::sr25519_public_keys(
+		// 		&*self.keystore, 
+		// 		sp_application_crypto::key_types::AURA,
+		// 	);
+
+		// 	if sr25519_public_keys.len() > 0{
+		// 		let pub_bytes = sr25519_public_keys[0].to_raw_vec();
+
+		// 		let mut rank_vec = vec![];
+		// 		for election in election_vec.iter(){
+		// 			let rank = match election.vote_list.iter().position(|vote|vote.pub_bytes == pub_bytes){
+		// 				Some(x) if x < MAX_VOTE_RANK =>x,
+		// 				_ => MAX_VOTE_RANK,
+		// 			};
+		// 			rank_vec.push(rank);
+		// 		}
+
+		// 		let committee_count = committee_vec.len();
+		// 		while rank_vec.len() < committee_count{
+		// 			rank_vec.push(MAX_VOTE_RANK);
+		// 		}
+
+		// 		rank_vec.sort();
+		// 		log::info!("{:?}, election result", rank_vec);
+		// 		let weight = caculate_election_weight_value(&rank_vec, MAX_VOTE_RANK);
+
+		// 		return Some(weight);
+		// 	}
+		// }
+		// None
 	}
 }
 
@@ -1189,6 +1280,26 @@ fn caculate_min_max_election_weight(committee_count: usize, max_vote_rank: usize
 	let max_value = caculate_max_election_weight(committee_count, max_vote_rank);
 	(min_value, max_value)
 }
+
+// pub fn caculate_vrf_num_from_vote<B: BlockT>(vote_data: &VoteData<B>)->Result<u128, Box<dyn Error>>{
+// 	let public = PublicKey::from_bytes(&vote_data.pub_bytes.as_slice()).ok()?;
+// 	if let Ok(inout) = vrf_sig.output.attach_input_hash(&public, transcript){
+// 		let vrf_u128 = u128::from_le_bytes(inout.make_bytes::<[u8; 16]>(VOTE_VRF_PREFIX));
+// 		log::info!("VRF u128: {}", vrf_u128);
+// 	}
+
+// 	match schnorrkel::PublicKey::from_bytes(&publice_key)
+// 		.and_then(|p| {
+// 			p.vrf_verify(transcript, &vrf_output, &vrf_proof)
+// 		})
+// 	{
+// 		Ok((inout, _))=> {
+// 			let recover_u128 = u128::from_le_bytes(inout.make_bytes::<[u8; 16]>(VOTE_VRF_PREFIX));
+// 			log::info!("Recover: {}", recover_u128);
+// 		},
+// 		Err(e) => log::info!("Err: {}", e),
+// 	}
+// }
 
 pub fn caculate_min_election_weight(committee_count: usize, max_vote_rank: usize)->u64{
 	let half_count = committee_count/2+1;
@@ -1230,7 +1341,7 @@ where
 		let committee_count = committee_vec.len();
 
 		if let Ok(pre_digest) = find_pre_digest::<B, S>(header){
-			let pub_bytes = pre_digest.pub_bytes;
+			let pub_bytes = pre_digest.pub_key_bytes;
 			let mut rank_vec = vec![];
 			if let Ok(election_vec) = <Vec<ElectionData<B>> as Decode>::decode(&mut pre_digest.election_bytes.as_slice()){
 				for election in election_vec.iter(){
@@ -1273,6 +1384,12 @@ pub enum Error<B: BlockT> {
 	ElectionDataDecodeFailed,
 	#[display(fmt = "get committee member failed")]
 	NoCommitteeFound,
+	#[display(fmt = "decode vrfoutput failed")]
+	VRFOutputDecodeFailed,
+	#[display(fmt = "decode vrfproof failed")]
+	VRFProofDecodeFailed,
+	#[display(fmt = "vrf verify failed")]
+	VRFVerifyFailed,
 	#[display(fmt = "Header {:?} is unsealed", _0)]
 	HeaderUnsealed(B::Hash),
 	#[display(fmt = "Header {:?} has a bad seal", _0)]
@@ -1300,8 +1417,9 @@ pub fn find_pre_digest<B: BlockT, Signature: Codec>(header: &B::Header) -> Resul
 		return Ok(PreDigest{
 			// authority_index: 0u32,
 			slot: 0.into(), 
-			rand_bytes: vec![],
-			pub_bytes: vec![],
+			pub_key_bytes: vec![],
+			vrf_output_bytes: vec![],
+			vrf_proof_bytes: vec![],
 			election_bytes: vec![],
 		})
 	}

@@ -8293,6 +8293,7 @@ dependencies = [
  "sc-network-test",
  "sc-service",
  "sc-telemetry",
+ "schnorrkel",
  "sp-api",
  "sp-application-crypto",
  "sp-arithmetic",
@@ -9601,6 +9602,7 @@ dependencies = [
  "parity-scale-codec",
  "sp-core",
  "sp-inherents",
+ "sp-keystore",
  "sp-runtime",
  "sp-state-machine",
  "sp-std",
@@ -9675,6 +9677,7 @@ name = "sp-consensus-vote-election"
 version = "0.10.0-dev"
 dependencies = [
  "async-trait",
+ "merlin",
  "parity-scale-codec",
  "scale-info",
  "sp-api",
@@ -9682,6 +9685,7 @@ dependencies = [
  "sp-consensus",
  "sp-consensus-slots",
  "sp-inherents",
+ "sp-keystore",
  "sp-runtime",
  "sp-std",
  "sp-timestamp",

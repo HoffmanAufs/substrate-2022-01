@@ -311,8 +311,7 @@ impl<B: BlockT + 'static, H: ExHashT> VoteElectionHandler<B, H> {
 
 	fn propagate_election(&mut self, election_data: ElectionData<B>){
 		let mut propagated_numbers = 0;
-		let hash = election_data.hash.clone();
-		// let to_send = VoteElectionNotification::VoteV2(vote_data).encode();
+		// let hash = election_data.hash.clone();
 		let to_send = VoteElectionNotification::Election(election_data).encode();
 
 		for (who, peer) in self.peers.iter_mut() {
@@ -349,7 +348,7 @@ impl<B: BlockT + 'static, H: ExHashT> VoteElectionHandler<B, H> {
 	fn propagate_vote(&mut self, vote_data: VoteData<B>){
 		// log::info!("{:?}", vote_data);
 		let mut propagated_numbers = 0;
-		let hash = vote_data.hash.clone();
+		// let hash = vote_data.hash.clone();
 
 		let to_send = VoteElectionNotification::Vote(vote_data).encode();
 

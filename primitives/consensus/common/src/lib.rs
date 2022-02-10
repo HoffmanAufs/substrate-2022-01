@@ -356,27 +356,38 @@ pub enum VoteElectionRequest<B: BlockT>{
 	PropagateElection(ElectionData<B>),
 }
 
+// #[derive(Debug, Encode, Decode, Clone)]
+// pub struct VoteData<B>
+// where 
+// 	B: BlockT,
+// {
+// 	pub hash: B::Hash,
+// 	pub sig_bytes: Vec<u8>,
+// 	pub pub_bytes: Vec<u8>,
+// }
+
+// impl<B> VoteData<B>
+// where
+// 	B: BlockT,
+// {
+// 	pub fn new(sig_bytes: Vec<u8>, hash: B::Hash, pub_bytes: Vec<u8>)->Self{
+// 		Self{
+// 			hash,
+// 			sig_bytes,
+// 			pub_bytes,
+// 		}
+// 	}
+// }
+
 #[derive(Debug, Encode, Decode, Clone)]
 pub struct VoteData<B>
 where 
 	B: BlockT,
 {
 	pub hash: B::Hash,
-	pub sig_bytes: Vec<u8>,
+	pub vrf_output_bytes: Vec<u8>,
+	pub vrf_proof_bytes: Vec<u8>,
 	pub pub_bytes: Vec<u8>,
-}
-
-impl<B> VoteData<B>
-where
-	B: BlockT,
-{
-	pub fn new(sig_bytes: Vec<u8>, hash: B::Hash, pub_bytes: Vec<u8>)->Self{
-		Self{
-			hash,
-			sig_bytes,
-			pub_bytes,
-		}
-	}
 }
 
 #[derive(Debug, Encode, Decode)]
@@ -388,13 +399,13 @@ pub struct ElectionData<B: BlockT>{
 	pub committee_pub_bytes: Vec<u8>,
 }
 
-impl <B:BlockT> ElectionData<B>{
-	pub fn new(hash: B::Hash, sig_bytes: Vec<u8>, vote_list: Vec<VoteData<B>>, committee_pub_bytes: Vec<u8>)->Self{
-		Self{
-			hash,
-			sig_bytes,
-			vote_list,
-			committee_pub_bytes,
-		}
-	}
-}
+// impl <B:BlockT> ElectionData<B>{
+// 	pub fn new(hash: B::Hash, sig_bytes: Vec<u8>, vote_list: Vec<VoteData<B>>, committee_pub_bytes: Vec<u8>)->Self{
+// 		Self{
+// 			hash,
+// 			sig_bytes,
+// 			vote_list,
+// 			committee_pub_bytes,
+// 		}
+// 	}
+// }

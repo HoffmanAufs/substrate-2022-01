@@ -25,6 +25,9 @@ sp-consensus = { version = "0.10.0-dev", path = "../common", optional = true }
 async-trait = { version = "0.1.50", optional = true }
 scale-info = { version = "1.0", default-features = false, features = ["derive"] }
 
+merlin = { version = "2.0", default-features = false }
+sp-keystore = { version = "0.10.0", default-features = false, path = "../../keystore", optional = true }
+
 [features]
 default = ["std"]
 std = [
@@ -38,4 +41,6 @@ std = [
 	"sp-consensus-slots/std",
 	"sp-consensus",
 	"async-trait",
+	"merlin/std",
+	"sp-keystore/std",
 ]

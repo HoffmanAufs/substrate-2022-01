@@ -31,36 +31,36 @@ pub use crate::{
 };
 use crate::{slots::Slots, MAX_VOTE_RANK, COMMITTEE_TIMEOUT};
 
-use codec::{Codec, Decode, Encode};
+use codec::{Decode, Encode};
 
 // use rand::Rng;
-use futures::{future::Either, Future, TryFutureExt, channel::mpsc, FutureExt};
+use futures::{Future, TryFutureExt, channel::mpsc, FutureExt};
 use futures::StreamExt;
 
 use futures_timer::Delay;
 use log::{debug, error, info, warn};
 use sc_consensus::{BlockImport, JustificationSyncLink};
 use sc_telemetry::{telemetry, TelemetryHandle, CONSENSUS_DEBUG, CONSENSUS_INFO, CONSENSUS_WARN};
-use sp_api::{ApiRef, ProvideRuntimeApi};
+use sp_api::{ProvideRuntimeApi};
 use sp_arithmetic::traits::BaseArithmetic;
 use sp_consensus::{CanAuthorWith, Proposer, SelectChain, SlotData, SyncOracle,
 	VoteElectionRequest, VoteData, ElectionData};
 // pub use sp_consensus_vote_election::{ AuraApi};
 use sp_consensus_slots::Slot;
-use sp_inherents::{CreateInherentDataProviders, InherentDataProvider};
+use sp_inherents::{CreateInherentDataProviders};
 use sp_runtime::{
 	generic::BlockId,
-	traits::{Block as BlockT, HashFor, Header as HeaderT, NumberFor, Zero},
+	traits::{Block as BlockT, HashFor, Header as HeaderT, Zero},
 };
 // use sp_blockchain::ProvideCache;
 use sp_timestamp::Timestamp;
 use std::{fmt::Debug, ops::Deref, time::{Duration, SystemTime }, sync::Arc};
 use std::collections::{BTreeMap, HashMap};
-use num_bigint::BigUint;
+use sp_keystore::vrf::VRFSignature;
 
 use sc_client_api::{
 	BlockchainEvents, ImportNotifications, BlockOf,
-	backend::{Backend as ClientBackend, Finalizer},
+	// backend::{Backend as ClientBackend, Finalizer},
 };
 
 /// The changes that need to applied to the storage to create the state for a block.
@@ -443,7 +443,8 @@ pub trait SimpleSlotWorker<B: BlockT> {
 		&mut self, 
 		slot_info: SlotInfo<B>,
 		parent_header: &B::Header,
-		rand_bytes: Vec<u8>,
+		// rand_bytes: Vec<u8>,
+		vrf_sig: &VRFSignature,
 		election_vec: Vec<ElectionData<B>>,
 	)-> Option<SlotResult<B, <Self::Proposer as Proposer<B>>::Proof>> {
 
@@ -497,7 +498,7 @@ pub trait SimpleSlotWorker<B: BlockT> {
 			return None
 		}
 
-		let claim = self.claim_slot_v2(slot_info.slot, rand_bytes, election_vec)?;
+		let claim = self.claim_slot_v2(slot_info.slot, vrf_sig, election_vec)?;
 
 		if self.should_backoff(slot, &parent_header) {
 			return None
@@ -630,34 +631,36 @@ pub trait SimpleSlotWorker<B: BlockT> {
 	}
 
 	/// no doc
-	fn propagate_vote(&mut self, hash: &B::Hash)->Option<Vec<u8>>;
-	/// no doc
-	fn propagate_vote_v2(&mut self, cur_hash: &B::Hash)->Option<Vec<u8>>;
+	fn propagate_vote(&mut self, vrf_sig: &VRFSignature, hash: &B::Hash);
 	/// no doc
 	fn propagate_election(&mut self, hash: B::Hash, _: Vec<VoteData<B>>);
 	/// no doc
-	fn verify_vote(&mut self, vote_data: &VoteData<B>)->bool;
+	fn verify_vote(&mut self, vote_data: &VoteData<B>)->Result<u128, &str>;
 	/// no doc
 	fn verify_election(&mut self, election_data: &ElectionData<B>, hash: &B::Hash)->bool;
-	/// no doc
-	fn update_timeout_duration(&mut self, hash: &B::Hash, election_vec: &Vec<ElectionData<B>>)->f32;
 	/// no doc
 	fn is_committee(&mut self, hash: &B::Hash)->bool;
 	/// no doc
 	fn claim_slot_v2(
 		&mut self,
 		slot: Slot,
-		rand_bytes: Vec<u8>,
+		vrf_sig: &VRFSignature,
 		election_vec: Vec<ElectionData<B>>
 	)->Option<Self::Claim>;
 	/// no doc
 	// fn caculate_min_weight(&mut self, header: &B::Header)->Result<u64, &str>;
 	/// no doc
-	fn caculate_weight_from_elections(&mut self, header: &B::Header, election_vec: &Vec<ElectionData<B>>)->Option<u64>;
+	fn caculate_weight_from_elections(
+		&mut self,
+		header: &B::Header,
+		election_vec: &Vec<ElectionData<B>>
+	)->Result<u64, &str>;
 	/// no doce
-	fn caculate_weight_info_from_header(&mut self, header: &B::Header)->Result<ElectionWeightInfo<B>, &str>;
+	fn caculate_weight_info_from_header(&mut self, header: &B::Header)->Result<ElectionWeightInfo, &str>;
 	/// no doce
 	fn caculate_min_max_weight(&mut self, header: &B::Header)->Result<(u64, u64), &str>;
+	/// no doce
+	fn generate_author_vrf_data(&mut self, cur_hash: &B::Hash)->Result<(u128, VRFSignature), &str>;
 }
 
 // #[async_trait::async_trait]
@@ -721,10 +724,10 @@ enum AuthorState<B: BlockT>{
 	WaitProposal(B::Header),
 }
 
-pub struct ElectionWeightInfo<B: BlockT>{
+pub struct ElectionWeightInfo{
 	pub weight: u64,
-	pub random: BigUint,
-	pub header: B::Header,
+	pub random: u128,
+	// pub header: B::Header,
 }
 
 /// aura author worker
@@ -759,7 +762,7 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 	loop{
 		match state {
 			AuthorState::WaitStart=>{
-				log::info!("►AuthorState::S0, wait block or timeout");
+				log::info!("► AuthorState::S0, wait block or timeout");
 				let full_timeout_duration = Duration::from_secs(10);
 				let start_time = SystemTime::now();
 				loop{
@@ -804,23 +807,39 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 			},
 			AuthorState::WaitProposal(cur_header)=>{
 				log::info!(
-					"►AuthorState::S1 #{} ({}), propagate vote and wait proposal",
+					"► AuthorState::S1 #{} ({}), propagate vote and wait proposal",
 					cur_header.number(),
 					cur_header.hash(),
 				);
 
-				match worker.propagate_vote_v2(&cur_header.hash()){
-					Some(x)=>log::info!("Some(x)"),
-					_ => {},
-				}
-
-				let rand_bytes = match worker.propagate_vote(&cur_header.hash()){
-					Some(x)=>x,
-					None=>{
+				let (local_vrf_num, vrf_signature) = match worker.generate_author_vrf_data(&cur_header.hash()){
+					Ok(x)=>{
+						log::info!(
+							"Author.S1, gen vrf u128: {}, #{} ({})",
+							x.0, cur_header.number(), cur_header.hash(),
+						);
+						x
+					},
+					Err(e)=>{
+						log::info!("Author.S1, generate vrf failed: {}", e);
 						state = AuthorState::WaitStart;
 						continue;
 					},
 				};
+				worker.propagate_vote(&vrf_signature, &cur_header.hash());
+
+				// match worker.propagate_vote_v2(&cur_header.hash()){
+				// 	Some(_)=>log::info!("Some(x)"),
+				// 	_ => {},
+				// }
+
+				// let rand_bytes = match worker.propagate_vote(&cur_header.hash()){
+				// 	Some(x)=>x,
+				// 	None=>{
+				// 		state = AuthorState::WaitStart;
+				// 		continue;
+				// 	},
+				// };
 				// let local_random = BigUint::from_bytes_be(&rand_bytes);
 
 				let mut election_vec = vec![];
@@ -884,8 +903,8 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 								}
 
 								if block.header.parent_hash() == &cur_header.hash(){
-									let local_random = BigUint::from_bytes_be(&rand_bytes);
-									if new_block_election_info.random < local_random {
+									// let local_random = BigUint::from_bytes_be(&rand_bytes);
+									if new_block_election_info.random < local_vrf_num {
 										log::info!(
 											"Author.S1, block #{} ({}) outside with smaller random",
 											block.header.number(),
@@ -901,8 +920,6 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 									block.header.number(),
 									block.hash
 								);
-								// state = AuthorState::WaitProposal(block.header);
-								// break;
 							}
 						},
 						election = election_rx.select_next_some()=>{
@@ -923,8 +940,8 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 
 							election_vec.push(election);
 							cur_election_weight = match worker.caculate_weight_from_elections(&cur_header, &election_vec){
-								Some(x) => x,
-								None => max_election_weight,
+								Ok(x) => x,
+								Err(_)  => max_election_weight,
 							};
 
 							rest_timeout_rate = {
@@ -957,10 +974,11 @@ pub async fn ve_author_worker<B, C, S, W, T, SO, CIDP, CAW>(
 								log::info!(
 									"Author.S1: timeout, prepare block at: #{} ({})",
 									cur_header.number(),
-									cur_header.hash()
+									cur_header.hash(),
 								);
 								if let Ok(slot_info) = slots.default_slot().await{
-									let _ = worker.produce_block(slot_info, &cur_header, rand_bytes, election_vec).await;
+									// let _ = worker.produce_block(slot_info, &cur_header, rand_bytes, election_vec).await;
+									let _ = worker.produce_block(slot_info, &cur_header, &vrf_signature, election_vec).await;
 								}
 							}
 							else{
@@ -1011,7 +1029,7 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 
 	let mut imported_blocks_stream = client.import_notification_stream().fuse();
 	let mut finality_notification_stream = client.finality_notification_stream().fuse();
-	let mut root_vote_map = HashMap::<B::Hash, BTreeMap<BigUint, VoteData<B>>>::new();
+	let mut root_vote_map = HashMap::<B::Hash, BTreeMap<u128, VoteData<B>>>::new();
 
 	let chain_head = match select_chain.best_chain().await{
 		Ok(x) => x,
@@ -1032,7 +1050,7 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 	loop{
 		match state{
 			CommitteeState::WaitStart=>{
-				log::info!("►CommitteeState::S0, wait start");
+				log::info!("► CommitteeState::S0, wait start");
 				let full_timeout_duration = Duration::from_secs(10);
 				let start_time = SystemTime::now();
 
@@ -1064,46 +1082,62 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 							}
 						},
 						vote_data = vote_rx.select_next_some()=>{
-							if worker.verify_vote(&vote_data){
-								// log::info!("Committee.S0: recv vote with hash: {}", vote_data.hash);
-								// log::info!("Committee.S0: recv vote with hash: ({:?}, {:?}) {}", vote_data.sig_bytes[0..2], vote_data.pub_bytes[0..2], vote_data.hash);
-								let sig_big_uint = BigUint::from_bytes_be(vote_data.sig_bytes.as_slice());
-								if let Some(bt_map) = root_vote_map.get_mut(&vote_data.hash){
-									bt_map.insert(sig_big_uint, vote_data.clone());
-									// while bt_map.len() >= MAX_VOTE_RANK{
-									// 	let mut keys = bt_map.keys().cloned().collect::<Vec<_>>();
-									// 	if let Some(tail) = keys.pop(){
-									// 		bt_map.remove(&tail);
-									// 	}
-									// }
-									// log::info!( "Committee.S0: recv vote with hash: {} ({})",vote_data.hash, bt_map.len());
-									// log::info!(
-									// 	"Committee.S0: recv vote with hash: {} ({}), \npub: {:?}\nsig: {:?}",
-									// 	vote_data.hash,
-									// 	bt_map.len(),
-									// 	&vote_data.pub_bytes[0..2],
-									// 	&vote_data.sig_bytes[0..2]
-									// );
-								}
-								else{
-									let mut new_bt_map = BTreeMap::new();
-									new_bt_map.insert(sig_big_uint, vote_data.clone());
-									root_vote_map.insert(vote_data.hash, new_bt_map);
+							match worker.verify_vote(&vote_data){
+								Ok(vrf_num)=>{
+									log::info!("Committee.S0, recv vrf u128: {}", vrf_num);
+									if let Some(bt_map) = root_vote_map.get_mut(&vote_data.hash){
+										bt_map.insert(vrf_num, vote_data.clone());
+									}
+									else{
+										let mut new_bt_map = BTreeMap::new();
+										new_bt_map.insert(vrf_num, vote_data.clone());
+										root_vote_map.insert(vote_data.hash, new_bt_map);
+									}
+								},
+								Err(e)=>{
+									log::info!("Committee.S0, verify vote failed: {}", e);
+								},
+							}
+							// if worker.verify_vote(&vote_data){
+							// 	// log::info!("Committee.S0: recv vote with hash: {}", vote_data.hash);
+							// 	// log::info!("Committee.S0: recv vote with hash: ({:?}, {:?}) {}", vote_data.sig_bytes[0..2], vote_data.pub_bytes[0..2], vote_data.hash);
+							// 	let sig_big_uint = BigUint::from_bytes_be(vote_data.sig_bytes.as_slice());
+							// 	if let Some(bt_map) = root_vote_map.get_mut(&vote_data.hash){
+							// 		bt_map.insert(sig_big_uint, vote_data.clone());
+							// 		// while bt_map.len() >= MAX_VOTE_RANK{
+							// 		// 	let mut keys = bt_map.keys().cloned().collect::<Vec<_>>();
+							// 		// 	if let Some(tail) = keys.pop(){
+							// 		// 		bt_map.remove(&tail);
+							// 		// 	}
+							// 		// }
+							// 		// log::info!( "Committee.S0: recv vote with hash: {} ({})",vote_data.hash, bt_map.len());
+							// 		// log::info!(
+							// 		// 	"Committee.S0: recv vote with hash: {} ({}), \npub: {:?}\nsig: {:?}",
+							// 		// 	vote_data.hash,
+							// 		// 	bt_map.len(),
+							// 		// 	&vote_data.pub_bytes[0..2],
+							// 		// 	&vote_data.sig_bytes[0..2]
+							// 		// );
+							// 	}
+							// 	else{
+							// 		let mut new_bt_map = BTreeMap::new();
+							// 		new_bt_map.insert(sig_big_uint, vote_data.clone());
+							// 		root_vote_map.insert(vote_data.hash, new_bt_map);
 
-									// log::info!("Committee.S0: root_vote_map insert: {} (1)", vote_data.hash);
-									// log::info!("Committee.S0: recv vote with hash: {} (1)", vote_data.hash);
-									// log::info!(
-									// 	"Committee.S0: recv vote with hash: {} ({}), \npub: {:?}\nsig: {:?}",
-									// 	vote_data.hash,
-									// 	1,
-									// 	&vote_data.pub_bytes[0..2],
-									// 	&vote_data.sig_bytes[0..2]
-									// );
-								}
-							}
-							else{
-								log::info!("Committee.S0: verify vote failed");
-							}
+							// 		// log::info!("Committee.S0: root_vote_map insert: {} (1)", vote_data.hash);
+							// 		// log::info!("Committee.S0: recv vote with hash: {} (1)", vote_data.hash);
+							// 		// log::info!(
+							// 		// 	"Committee.S0: recv vote with hash: {} ({}), \npub: {:?}\nsig: {:?}",
+							// 		// 	vote_data.hash,
+							// 		// 	1,
+							// 		// 	&vote_data.pub_bytes[0..2],
+							// 		// 	&vote_data.sig_bytes[0..2]
+							// 		// );
+							// 	}
+							// }
+							// else{
+							// 	log::info!("Committee.S0: verify vote failed");
+							// }
 							// continue;
 						},
 						block = finality_notification_stream.next()=>{
@@ -1117,13 +1151,13 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 						},
 						_ = timeout.fuse()=>{
 							if is_init_state == true{
-								// if let Some(header) = genesis_header.take(){
-								// 	log::info!("Committee.S0, timeout from init");
-								// 	if worker.is_committee(&header.hash()){
-								// 		state = CommitteeState::RecvVote(header);
-								// 		break;
-								// 	}
-								// }
+								if let Some(header) = genesis_header.take(){
+									log::info!("Committee.S0, timeout from init");
+									if worker.is_committee(&header.hash()){
+										state = CommitteeState::RecvVote(header);
+										break;
+									}
+								}
 							}
 						}
 					}
@@ -1131,7 +1165,7 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 			},
 			CommitteeState::RecvVote(cur_header)=>{
 				log::info!(
-					"►CommitteeState::S1 #{} ({}), recv vote and send election, root_map size: {}",
+					"► CommitteeState::S1 #{} ({}), recv vote and send election, root_map size: {}",
 					cur_header.number(),
 					cur_header.hash(),
 					root_vote_map.len(),
@@ -1182,40 +1216,56 @@ pub async fn ve_committee_worker<B, C, S, W, T, SO, CIDP, CAW>(
 							}
 						},
 						vote_data = vote_rx.select_next_some()=>{
-							if worker.verify_vote(&vote_data){
-								// log::info!("Committee.S1: recv vote with hash: ({:?}, {:?}) {}", vote_data.sig_bytes[0..2], vote_data.pub_bytes[0..2], vote_data.hash);
-								// log::info!("--Committee: recv vote with hash: {}", vote_data.hash);
-								let sig_big_uint = BigUint::from_bytes_be(vote_data.sig_bytes.as_slice());
-								if let Some(bt_map) = root_vote_map.get_mut(&vote_data.hash){
-									bt_map.insert(sig_big_uint, vote_data.clone());
-
-									// log::info!("Committee.S1: recv vote with hash: {} ({})", vote_data.hash, bt_map.len());
-									// log::info!(
-									// 	"Committee.S0: recv vote with hash: {} ({}), \npub: {:?}\nsig: {:?}",
-									// 	vote_data.hash,
-									// 	bt_map.len(),
-									// 	&vote_data.pub_bytes[0..2],
-									// 	&vote_data.sig_bytes[0..2]
-									// );
-								}
-								else{
-									let mut new_bt_map = BTreeMap::new();
-									new_bt_map.insert(sig_big_uint, vote_data.clone());
-									root_vote_map.insert(vote_data.hash, new_bt_map);
-
-									// log::info!("Committee.S1: recv vote with hash: {} (1)", vote_data.hash);
-									// log::info!(
-									// 	"Committee.S0: recv vote with hash: {} ({}), \npub: {:?}\nsig: {:?}",
-									// 	vote_data.hash,
-									// 	1,
-									// 	&vote_data.pub_bytes[0..2],
-									// 	&vote_data.sig_bytes[0..2]
-									// );
-								}
+							match worker.verify_vote(&vote_data){
+								Ok(vrf_num)=>{
+									log::info!("Committee.S1, recv vrf u128: {}", vrf_num);
+									if let Some(bt_map) = root_vote_map.get_mut(&vote_data.hash){
+										bt_map.insert(vrf_num, vote_data.clone());
+									}
+									else{
+										let mut new_bt_map = BTreeMap::new();
+										new_bt_map.insert(vrf_num, vote_data.clone());
+										root_vote_map.insert(vote_data.hash, new_bt_map);
+									}
+								},
+								Err(e)=>{
+									log::info!("Committee.S1, verify vote failed: {}", e);
+								},
 							}
-							else{
-								log::info!("CommitteeRecv.S1: verify vote failed");
-							}
+							// if worker.verify_vote(&vote_data){
+							// 	// log::info!("Committee.S1: recv vote with hash: ({:?}, {:?}) {}", vote_data.sig_bytes[0..2], vote_data.pub_bytes[0..2], vote_data.hash);
+							// 	// log::info!("--Committee: recv vote with hash: {}", vote_data.hash);
+							// 	let sig_big_uint = BigUint::from_bytes_be(vote_data.sig_bytes.as_slice());
+							// 	if let Some(bt_map) = root_vote_map.get_mut(&vote_data.hash){
+							// 		bt_map.insert(sig_big_uint, vote_data.clone());
+
+							// 		// log::info!("Committee.S1: recv vote with hash: {} ({})", vote_data.hash, bt_map.len());
+							// 		// log::info!(
+							// 		// 	"Committee.S0: recv vote with hash: {} ({}), \npub: {:?}\nsig: {:?}",
+							// 		// 	vote_data.hash,
+							// 		// 	bt_map.len(),
+							// 		// 	&vote_data.pub_bytes[0..2],
+							// 		// 	&vote_data.sig_bytes[0..2]
+							// 		// );
+							// 	}
+							// 	else{
+							// 		let mut new_bt_map = BTreeMap::new();
+							// 		new_bt_map.insert(sig_big_uint, vote_data.clone());
+							// 		root_vote_map.insert(vote_data.hash, new_bt_map);
+
+							// 		// log::info!("Committee.S1: recv vote with hash: {} (1)", vote_data.hash);
+							// 		// log::info!(
+							// 		// 	"Committee.S0: recv vote with hash: {} ({}), \npub: {:?}\nsig: {:?}",
+							// 		// 	vote_data.hash,
+							// 		// 	1,
+							// 		// 	&vote_data.pub_bytes[0..2],
+							// 		// 	&vote_data.sig_bytes[0..2]
+							// 		// );
+							// 	}
+							// }
+							// else{
+							// 	log::info!("CommitteeRecv.S1: verify vote failed");
+							// }
 							// continue;
 						},
 						block = finality_notification_stream.next()=>{

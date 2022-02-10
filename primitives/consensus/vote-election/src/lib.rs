@@ -19,9 +19,16 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
+pub use merlin::Transcript;
+
 use codec::{Codec, Decode, Encode};
 use sp_runtime::ConsensusEngineId;
 use sp_std::vec::Vec;
+#[cfg(feature = "std")]
+use sp_keystore::vrf::{VRFTranscriptData, VRFTranscriptValue};
+
+pub const VOTE_ENGINE_ID: ConsensusEngineId = *b"VOTE";
+pub const VOTE_VRF_PREFIX: &[u8] = b"substrate-vote-vrf";
 
 pub mod digests;
 pub mod inherents;
@@ -117,24 +124,23 @@ impl sp_consensus::SlotData for SlotDuration {
 	fn slot_duration(&self) -> std::time::Duration {
 		std::time::Duration::from_millis(self.0)
 	}
-
 	// const SLOT_KEY: &'static [u8] = b"aura_slot_duration";
 }
 
-// /// Make a VRF transcript from given randomness, slot number and epoch.
-// pub fn make_transcript(msg: &Vec<u8>, slot: Slot, epoch: u64) -> Transcript {
-// 	let mut transcript = Transcript::new(&BABE_ENGINE_ID);
-// 	transcript.append_message(b"chain hash", &msg[..]);
-// 	transcript
-// }
+/// Make a VRF transcript from given randomness, slot number and epoch.
+pub fn make_transcript(msg: &Vec<u8>) -> Transcript {
+	let mut transcript = Transcript::new(&VOTE_ENGINE_ID);
+	transcript.append_message(b"chain hash", msg.as_slice());
+	transcript
+}
 
-// /// Make a VRF transcript data container
-// #[cfg(feature = "std")]
-// pub fn make_transcript_data(msg: &Vec<u8>) -> VRFTranscriptData {
-// 	VRFTranscriptData {
-// 		label: &BABE_ENGINE_ID,
-// 		items: vec![
-// 			("chain hash", VRFTranscriptValue::Bytes(msg)),
-// 		],
-// 	}
-// }
+/// Make a VRF transcript data container
+#[cfg(feature = "std")]
+pub fn make_transcript_data(msg: &Vec<u8>) -> VRFTranscriptData {
+	VRFTranscriptData {
+		label: &VOTE_ENGINE_ID,
+		items: vec![
+			("chain hash", VRFTranscriptValue::Bytes(msg.clone())),
+		],
+	}
+}

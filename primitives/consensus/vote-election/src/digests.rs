@@ -31,8 +31,10 @@ use sp_std::vec::Vec;
 pub struct PreDigest{
 	// pub authority_index: u32,
 	pub slot: Slot,
-	pub pub_bytes: Vec<u8>,
-	pub rand_bytes: Vec<u8>,
+	pub pub_key_bytes: Vec<u8>,
+	// pub rand_bytes: Vec<u8>,
+	pub vrf_output_bytes: Vec<u8>,
+	pub vrf_proof_bytes: Vec<u8>,
 	pub election_bytes: Vec<u8>,
 }
 

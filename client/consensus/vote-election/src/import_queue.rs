@@ -20,7 +20,7 @@
 
 use crate::{aura_err, authorities, find_pre_digest, AuthorityId, Error};
 use codec::{Codec, Decode, Encode};
-use log::{debug, info, trace};
+use log::{debug, trace};
 use prometheus_endpoint::Registry;
 use sc_client_api::{backend::AuxStore, BlockOf, UsageProvider};
 use sc_consensus::{
@@ -38,7 +38,7 @@ use sp_blockchain::{
 use sp_consensus::{CanAuthorWith, Error as ConsensusError, ElectionData};
 use sp_consensus_vote_election::{
 	digests::CompatibleDigestItem, inherents::AuraInherentData, AuraApi, ConsensusLog,
-	AURA_ENGINE_ID,
+	AURA_ENGINE_ID, make_transcript,
 };
 use sp_consensus_slots::Slot;
 use sp_core::{crypto::Pair, ExecutionContext};
@@ -49,6 +49,7 @@ use sp_runtime::{
 	DigestItem,
 };
 use std::{fmt::Debug, hash::Hash, marker::PhantomData, sync::Arc};
+use schnorrkel::vrf::{VRFOutput, VRFProof};
 
 /// check a header has been signed by the right key. If the slot is too far in the future, an error
 /// will be returned. If it's successful, returns the pre-header and the digest item
@@ -115,6 +116,33 @@ where
 
 	let pre_digest = find_pre_digest::<B, P::Signature>(&header)?;
 
+	// verify vrf output
+	let transcript = make_transcript(&header.parent_hash().encode());
+
+	let vrf_output = VRFOutput::from_bytes(pre_digest.vrf_output_bytes.as_slice())
+		.map_err(|_|Error::VRFOutputDecodeFailed)?;
+	
+	let vrf_proof = VRFProof::from_bytes(pre_digest.vrf_proof_bytes.as_slice())
+		.map_err(|_|Error::VRFProofDecodeFailed)?;
+
+	// let vrf_output = match VRFOutput::from_bytes(pre_digest.vrf_output_bytes.as_slice()){
+	// 	Ok(x)=>x,
+	// 	Err(_) => return Err(Error::VRFOutputDecodeFailed),
+	// };
+	// let vrf_proof = match VRFProof::from_bytes(pre_digest.vrf_proof_bytes.as_slice()){
+	// 	Ok(x)=>x,
+	// 	Err(_) => return Err(Error::VRFProofDecodeFailed),
+	// };
+	// let public_key_bytes = pre_digest.pub_key_bytes;
+
+	match schnorrkel::PublicKey::from_bytes(&pre_digest.pub_key_bytes)
+		.and_then(|p|{ p.vrf_verify(transcript, &vrf_output, &vrf_proof)}){
+			Ok(_)=>{
+				// log::info!("check vrf success");
+			},
+			Err(_)=> return Err(Error::VRFVerifyFailed),
+		}
+
 	// verify pre_digest
 	let election_bytes = pre_digest.election_bytes;
 	let election_vec = match <Vec<ElectionData<B>>>::decode(&mut election_bytes.as_slice()){
@@ -146,7 +174,7 @@ where
 
 	let slot = pre_digest.slot;
 
-	let expected_author = match <AuthorityId<P> as Decode>::decode(&mut pre_digest.pub_bytes.as_slice()){
+	let expected_author = match <AuthorityId<P> as Decode>::decode(&mut pre_digest.pub_key_bytes.as_slice()){
 		Ok(author)=> author.clone(),
 		Err(_) => return Err(Error::NoDigestFound),
 	};
