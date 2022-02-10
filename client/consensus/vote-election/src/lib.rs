@@ -842,27 +842,49 @@ where
 		let transcript = make_transcript(&msg);
 		let transcript_data = make_transcript_data(&msg);
 
-		// // if let Ok(Some(vrf_sig)) = SyncCryptoStore::sr25519_vrf_sign(
-		let vrf_sig = SyncCryptoStore::sr25519_vrf_sign(
-				&*self.keystore,
-				<AuthorityId<P> as AppKey>::ID,
-				&sr25519_public_keys[0],
-				transcript_data,
-			).map_err(|e|format!("Vrf sign failed: {}", e))?
-			.ok_or(format!("Vrf sign failed"))?;
+		if let Ok(Some(vrf_sig)) = SyncCryptoStore::sr25519_vrf_sign(
+			&*self.keystore,
+			<AuthorityId<P> as AppKey>::ID,
+			&sr25519_public_keys[0],
+			transcript_data,
+		){
+			let public = PublicKey::from_bytes(&sr25519_public_keys[0].to_raw_vec())
+				.map_err(|e|format!("Decode public key failed: {}", e))?;
 
-		let public = PublicKey::from_bytes(&sr25519_public_keys[0].to_raw_vec())
-			.map_err(|e|format!("Decode public key failed: {}", e))?;
-		
-		match vrf_sig.output.attach_input_hash(&public, transcript){
-			Ok(inout)=>{
-				let vrf_num = u128::from_le_bytes(inout.make_bytes::<[u8; 16]>(VOTE_VRF_PREFIX));
-				return Ok((vrf_num, vrf_sig));
-			},
-			Err(e)=>{
-				return Err(format!("Recover vrf failed: {}", e));
+			match vrf_sig.output.attach_input_hash(&public, transcript){
+				Ok(inout)=>{
+					let vrf_num = u128::from_le_bytes(inout.make_bytes::<[u8; 16]>(VOTE_VRF_PREFIX));
+					return Ok((vrf_num, vrf_sig));
+				},
+				Err(e)=>{
+					return Err(format!("Recover vrf failed: {}", e));
+				}
 			}
 		}
+		else{
+			Err("VRF signature failed".to_string())
+		}
+
+		// let vrf_sig = SyncCryptoStore::sr25519_vrf_sign(
+		// 		&*self.keystore,
+		// 		<AuthorityId<P> as AppKey>::ID,
+		// 		&sr25519_public_keys[0],
+		// 		transcript_data,
+		// 	).map_err(|e|format!("Vrf sign failed: {}", e))?
+		// 	.ok_or(format!("Vrf sign failed"))?;
+
+		// let public = PublicKey::from_bytes(&sr25519_public_keys[0].to_raw_vec())
+		// 	.map_err(|e|format!("Decode public key failed: {}", e))?;
+		
+		// match vrf_sig.output.attach_input_hash(&public, transcript){
+		// 	Ok(inout)=>{
+		// 		let vrf_num = u128::from_le_bytes(inout.make_bytes::<[u8; 16]>(VOTE_VRF_PREFIX));
+		// 		return Ok((vrf_num, vrf_sig));
+		// 	},
+		// 	Err(e)=>{
+		// 		return Err(format!("Recover vrf failed: {}", e));
+		// 	}
+		// }
 
 		// match SyncCryptoStore::sr25519_vrf_sign(
 		// 	&*self.keystore,
