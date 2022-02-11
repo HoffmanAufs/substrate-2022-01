@@ -56,13 +56,24 @@ use schnorrkel::vrf::{VRFOutput, VRFProof};
 /// containing the seal.
 ///
 /// This digest item will always return `Some` when used with `as_aura_seal`.
+// fn check_header<C, B: BlockT, P: Pair>(
+// 	_client: &C,
+// 	_slot_now: Slot,
+// 	mut header: B::Header,
+// 	hash: B::Hash,
+// 	_authorities: &[AuthorityId<P>],
+// 	_check_for_equivocation: CheckForEquivocation,
+// ) -> Result<CheckedHeader<B::Header, (Slot, DigestItem)>, Error<B>>
+// where
+// 	P::Signature: Codec,
+// 	C: sc_client_api::backend::AuxStore,
+// 	P::Public: Encode + Decode + PartialEq + Clone,
+// {
 fn check_header<C, B: BlockT, P: Pair>(
-	_client: &C,
-	_slot_now: Slot,
 	mut header: B::Header,
-	hash: B::Hash,
-	_authorities: &[AuthorityId<P>],
-	_check_for_equivocation: CheckForEquivocation,
+	block_hash: B::Hash,
+	parent_hash: B::Hash,
+	authorities: &[AuthorityId<P>],
 ) -> Result<CheckedHeader<B::Header, (Slot, DigestItem)>, Error<B>>
 where
 	P::Signature: Codec,
@@ -110,9 +121,9 @@ where
 	// 	}
 	// }
 
-	let seal = header.digest_mut().pop().ok_or_else(|| Error::HeaderUnsealed(hash))?;
+	let seal = header.digest_mut().pop().ok_or_else(|| Error::HeaderUnsealed(block_hash))?;
 
-	let sig = seal.as_aura_seal().ok_or_else(|| aura_err(Error::HeaderBadSeal(hash)))?;
+	let sig = seal.as_aura_seal().ok_or_else(|| aura_err(Error::HeaderBadSeal(block_hash)))?;
 
 	let pre_digest = find_pre_digest::<B, P::Signature>(&header)?;
 
@@ -135,6 +146,7 @@ where
 	// };
 	// let public_key_bytes = pre_digest.pub_key_bytes;
 
+	// verify block vrf
 	match schnorrkel::PublicKey::from_bytes(&pre_digest.pub_key_bytes)
 		.and_then(|p|{ p.vrf_verify(transcript, &vrf_output, &vrf_proof)}){
 			Ok(_)=>{
@@ -156,21 +168,61 @@ where
 
 	for election in election_vec.iter(){
 		let ElectionData{hash, sig_bytes, vote_list, committee_pub_bytes} = election;
-		if let Ok(sig) = <P::Signature as Decode>::decode(&mut sig_bytes.as_slice()){
-			let mut msg_bytes :Vec<u8> = vec![];
-			msg_bytes.extend(hash.encode().iter());
-			msg_bytes.extend(vote_list.encode().iter());
+		if *hash != parent_hash{
+			log::info!("Bad election, wrong hash, cur: {}, parent_hash: {}", hash, parent_hash);
+			return Err(Error::BadElection(*hash));
+		}
 
-			let msg = msg_bytes.as_slice();
+		let sig = <P::Signature as Decode>::decode(&mut sig_bytes.as_slice())
+			.map_err(|_|Error::BadElectionSignatureBytes)?;
 
-			if let Ok(verify_public) = <AuthorityId<P> as Decode>::decode(&mut committee_pub_bytes.as_slice()){
-				if !P::verify(&sig, &msg, &verify_public){
-					log::info!("predigest verify failed");
-					return Err(Error::BadSignature(*hash));
-				}
-			}
+		let mut msg_bytes :Vec<u8> = vec![];
+		msg_bytes.extend(hash.encode().iter());
+		msg_bytes.extend(vote_list.encode().iter());
+
+		let msg = msg_bytes.as_slice();
+
+		let verify_public = <AuthorityId<P> as Decode>::decode(&mut committee_pub_bytes.as_slice())
+			.map_err(|_|Error::BadElectionCommitteeBytes)?;
+
+		if !authorities.contains(&verify_public){
+			log::info!("Election not from committee");
+			Err(Error::BadElection(*hash))?;
+		}
+		if !P::verify(&sig, &msg, &verify_public){
+			log::info!("predigest verify failed");
+			Err(Error::BadSignature(*hash))?;
 		}
 	}
+
+	// // let parent_hash = header.parent_hash();
+	// for election in election_vec.iter(){
+	// 	let ElectionData{hash, sig_bytes, vote_list, committee_pub_bytes} = election;
+	// 	if *hash != parent_hash{
+	// 		log::info!("Bad election, wrong hash, cur: {}, parent_hash: {}", hash, parent_hash);
+	// 		return Err(Error::BadElection(*hash));
+	// 	}
+
+	// 	if let Ok(sig) = <P::Signature as Decode>::decode(&mut sig_bytes.as_slice()){
+	// 		let mut msg_bytes :Vec<u8> = vec![];
+	// 		msg_bytes.extend(hash.encode().iter());
+	// 		msg_bytes.extend(vote_list.encode().iter());
+
+	// 		let msg = msg_bytes.as_slice();
+
+	// 		if let Ok(verify_public) = <AuthorityId<P> as Decode>::decode(&mut committee_pub_bytes.as_slice()){
+	// 			// verify if the election come from committee
+	// 			if !authorities.contains(&verify_public){
+	// 				log::info!("Election not from committee");
+	// 				return Err(Error::BadElection(*hash));
+	// 			}
+	// 			if !P::verify(&sig, &msg, &verify_public){
+	// 				log::info!("predigest verify failed");
+	// 				return Err(Error::BadSignature(*hash));
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	let slot = pre_digest.slot;
 
@@ -184,7 +236,7 @@ where
 		Ok(CheckedHeader::Checked(header, (slot, seal)))
 	}
 	else{
-		Err(Error::BadSignature(hash))
+		Err(Error::BadSignature(block_hash))
 	}
 }
 
@@ -297,18 +349,24 @@ where
 			.create_inherent_data()
 			.map_err(Error::<B>::Inherent)?;
 
-		let slot_now = create_inherent_data_providers.slot();
+		// let slot_now = create_inherent_data_providers.slot();
 
 		// we add one to allow for some small drift.
 		// FIXME #1019 in the future, alter this queue to allow deferring of
 		// headers
+		// let checked_header = check_header::<C, B, P>(
+		// 	&self.client,
+		// 	slot_now + 1,
+		// 	block.header,
+		// 	hash,
+		// 	&authorities[..],
+		// 	self.check_for_equivocation,
+		// )
 		let checked_header = check_header::<C, B, P>(
-			&self.client,
-			slot_now + 1,
 			block.header,
 			hash,
-			&authorities[..],
-			self.check_for_equivocation,
+			parent_hash,
+			&authorities,
 		)
 		.map_err(|e| e.to_string())?;
 		match checked_header {

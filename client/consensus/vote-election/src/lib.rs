@@ -864,64 +864,6 @@ where
 		else{
 			Err("VRF signature failed".to_string())
 		}
-
-		// let vrf_sig = SyncCryptoStore::sr25519_vrf_sign(
-		// 		&*self.keystore,
-		// 		<AuthorityId<P> as AppKey>::ID,
-		// 		&sr25519_public_keys[0],
-		// 		transcript_data,
-		// 	).map_err(|e|format!("Vrf sign failed: {}", e))?
-		// 	.ok_or(format!("Vrf sign failed"))?;
-
-		// let public = PublicKey::from_bytes(&sr25519_public_keys[0].to_raw_vec())
-		// 	.map_err(|e|format!("Decode public key failed: {}", e))?;
-		
-		// match vrf_sig.output.attach_input_hash(&public, transcript){
-		// 	Ok(inout)=>{
-		// 		let vrf_num = u128::from_le_bytes(inout.make_bytes::<[u8; 16]>(VOTE_VRF_PREFIX));
-		// 		return Ok((vrf_num, vrf_sig));
-		// 	},
-		// 	Err(e)=>{
-		// 		return Err(format!("Recover vrf failed: {}", e));
-		// 	}
-		// }
-
-		// match SyncCryptoStore::sr25519_vrf_sign(
-		// 	&*self.keystore,
-		// 	<AuthorityId<P> as AppKey>::ID,
-		// 	&sr25519_public_keys[0],
-		// 	transcript_data,
-		// ).map_err(|e|format!("Vrf sign failed: {}", e))?{
-		// 	Some(vrf_sig)=>{
-
-		// 		let public = PublicKey::from_bytes(&sr25519_public_keys[0].to_raw_vec())
-		// 			.map_err(|e|format!("Decode public key failed: {}", e))?;
-
-		// 		match vrf_sig.output.attach_input_hash(&public, transcript){
-		// 			Ok(inout)=>{
-		// 				let vrf_num = u128::from_le_bytes(inout.make_bytes::<[u8; 16]>(VOTE_VRF_PREFIX));
-		// 				return Ok((vrf_num, vrf_sig));
-		// 			},
-		// 			Err(e)=>{
-		// 				return Err(format!("Recover vrf failed: {}", e));
-		// 			}
-		// 		}
-		// 	},
-		// 	None => {
-		// 		return Err(format!("Vrf sign result None"));
-		// 	}
-		// }
-
-			// if let Ok(inout) = vrf_sig.output.attach_input_hash(&public, transcript){
-			// 	let vrf_num = u128::from_le_bytes(inout.make_bytes::<[u8; 16]>(VOTE_VRF_PREFIX));
-			// 	return Ok((vrf_num, vrf_sig));
-			// }
-			// else{
-			// 	return Err("Recover vrf num failed".to_string());
-			// }
-		// else{
-		// 	return Err("VRF signature failed".to_string());
-		// }
 	}
 
 	// fn propagate_vote(&mut self){
@@ -1070,7 +1012,7 @@ where
 		let vrf_output = VRFOutput::from_bytes(pre_digest.vrf_output_bytes.as_slice())
 			.map_err(|e|format!("Decode vrf output failed: {}", e))?;
 
-		let transcript = make_transcript(&header.hash().encode());
+		let transcript = make_transcript(&header.parent_hash().encode());
 
 		let public = PublicKey::from_bytes(pre_digest.pub_key_bytes.as_slice())
 			.map_err(|e|format!("Decode public key failed: {}", e))?;
@@ -1080,28 +1022,15 @@ where
 			Err(e)=> Err(format!("gen vrf number failed: {}", e))?,
 		};
 
+		let pub_bytes = pre_digest.pub_key_bytes;
+
 		let election_bytes = pre_digest.election_bytes;
 		let election_vec = <Vec<ElectionData<B>>>::decode(&mut election_bytes.as_slice())
 			.map_err(|e|format!("Decode election data failed: {}", e))?;
 
-		let mut rank_vec = vec![];
-		let pub_bytes = pre_digest.pub_key_bytes;
-		for election in election_vec.iter(){
-			let rank = match election.vote_list.iter().position(|vote|vote.pub_bytes == pub_bytes){
-				Some(x) if x < MAX_VOTE_RANK => x,
-				// None => MAX_VOTE_RANK,
-				_ => MAX_VOTE_RANK,
-			};
-			rank_vec.push(rank);
-		}
-
 		let committee_count = committee_list.len();
-		while rank_vec.len() < committee_count{
-			rank_vec.push(MAX_VOTE_RANK);
-		}
 
-		rank_vec.sort();
-		let election_weight = caculate_election_weight_value(&rank_vec, MAX_VOTE_RANK);
+		let election_weight = caculate_weight_from_elections(&pub_bytes, &election_vec, committee_count);
 
 		Ok(ElectionWeightInfo{
 			weight: election_weight,
@@ -1109,7 +1038,7 @@ where
 		})
 	}
 
-	fn caculate_weight_from_elections(
+	fn caculate_elections_weight(
 		&mut self,
 		header: &B::Header,
 		election_vec: &Vec<ElectionData<B>>,
@@ -1128,6 +1057,9 @@ where
 
 		let pub_bytes = sr25519_public_keys[0].to_raw_vec();
 
+		// let weight = caculate_weight_from_elections(pub_bytes, election_vec);
+		// Ok(weight)
+
 		let mut rank_vec = vec![];
 		for election in election_vec.iter(){
 			let rank = match election.vote_list.iter().position(|vote|vote.pub_bytes == pub_bytes){
@@ -1144,13 +1076,61 @@ where
 
 		rank_vec.sort();
 		log::info!("{:?}, election result", rank_vec);
-		let weight = caculate_election_weight_value(&rank_vec, MAX_VOTE_RANK);
+		// let weight = caculate_weight_from_ranks(&rank_vec, MAX_VOTE_RANK);
 
+		let weight = caculate_weight_from_elections(&pub_bytes, &election_vec, committee_count);
 		Ok(weight)
 	}
 }
 
-fn caculate_election_weight_value(rank_vec: &Vec<usize>, max_vote_rank: usize)->u64{
+pub fn caculate_block_weight<A, B, S, C>(header: &B::Header, client: &C)->Result<u64, Error<B>>
+where
+	A: Codec + Debug,
+	B: BlockT,
+	S: Codec,
+	C: ProvideRuntimeApi<B> + BlockOf,
+	C::Api: AuraApi<B, A>,
+{
+	let committee_vec = authorities(client, &BlockId::Hash(header.hash()))
+		.map_err(|_|Error::NoCommitteeFound)?;
+
+	let committee_count = committee_vec.len();
+
+	let pre_digest = find_pre_digest::<B, S>(header)
+		.map_err(|_|Error::NoDigestFound)?;
+
+	let pub_bytes = pre_digest.pub_key_bytes;
+
+	let election_vec = <Vec<ElectionData<B>> as Decode>::decode(&mut pre_digest.election_bytes.as_slice())
+		.map_err(|_|Error::ElectionDataDecodeFailed)?;
+	
+	let block_election_weight = caculate_weight_from_elections(&pub_bytes, &election_vec, committee_count);
+
+	Ok(block_election_weight)
+}
+
+fn caculate_weight_from_elections<B: BlockT>(pub_bytes: &Vec<u8>, election_vec: &Vec<ElectionData<B>>, committee_count: usize)->u64{
+	let mut rank_vec = vec![];
+	for election in election_vec.iter(){
+		let rank = match election.vote_list.iter().position(|vote| vote.pub_bytes == *pub_bytes){
+			Some(x) if x < MAX_VOTE_RANK =>x,
+			// None => MAX_VOTE_RANK,
+			_ => MAX_VOTE_RANK,
+		};
+		rank_vec.push(rank);
+	}
+
+	while rank_vec.len() < committee_count{
+		rank_vec.push(MAX_VOTE_RANK);
+	}
+
+	rank_vec.sort();
+	let weight = caculate_weight_from_ranks(&rank_vec, MAX_VOTE_RANK);
+	weight
+}
+
+// fn caculate_election_weight_value(rank_vec: &Vec<usize>, max_vote_rank: usize)->u64{
+fn caculate_weight_from_ranks(rank_vec: &Vec<usize>, max_vote_rank: usize)->u64{
 	let mut ret = 0;
 	let mut base = 1;
 	let base_step = max_vote_rank+1;
@@ -1167,26 +1147,6 @@ fn caculate_min_max_election_weight(committee_count: usize, max_vote_rank: usize
 	let max_value = caculate_max_election_weight(committee_count, max_vote_rank);
 	(min_value, max_value)
 }
-
-// pub fn caculate_vrf_num_from_vote<B: BlockT>(vote_data: &VoteData<B>)->Result<u128, Box<dyn Error>>{
-// 	let public = PublicKey::from_bytes(&vote_data.pub_bytes.as_slice()).ok()?;
-// 	if let Ok(inout) = vrf_sig.output.attach_input_hash(&public, transcript){
-// 		let vrf_u128 = u128::from_le_bytes(inout.make_bytes::<[u8; 16]>(VOTE_VRF_PREFIX));
-// 		log::info!("VRF u128: {}", vrf_u128);
-// 	}
-
-// 	match schnorrkel::PublicKey::from_bytes(&publice_key)
-// 		.and_then(|p| {
-// 			p.vrf_verify(transcript, &vrf_output, &vrf_proof)
-// 		})
-// 	{
-// 		Ok((inout, _))=> {
-// 			let recover_u128 = u128::from_le_bytes(inout.make_bytes::<[u8; 16]>(VOTE_VRF_PREFIX));
-// 			log::info!("Recover: {}", recover_u128);
-// 		},
-// 		Err(e) => log::info!("Err: {}", e),
-// 	}
-// }
 
 pub fn caculate_min_election_weight(committee_count: usize, max_vote_rank: usize)->u64{
 	let half_count = committee_count/2+1;
@@ -1216,80 +1176,6 @@ fn aura_err<B: BlockT>(error: Error<B>) -> Error<B> {
 	error
 }
 
-pub fn caculate_block_weight<A, B, S, C>(header: &B::Header, client: &C)->Result<u64, Error<B>>
-where
-	A: Codec + Debug,
-	B: BlockT,
-	S: Codec,
-	C: ProvideRuntimeApi<B> + BlockOf,
-	C::Api: AuraApi<B, A>,
-{
-	let committee_vec = authorities(client, &BlockId::Hash(header.hash()))
-		.map_err(|_|Error::NoCommitteeFound)?;
-
-	let committee_count = committee_vec.len();
-
-	let pre_digest = find_pre_digest::<B, S>(header)
-		.map_err(|_|Error::NoDigestFound)?;
-
-	let pub_bytes = pre_digest.pub_key_bytes;
-	let mut rank_vec = vec![];
-
-	let election_vec = <Vec<ElectionData<B>> as Decode>::decode(&mut pre_digest.election_bytes.as_slice())
-		.map_err(|_|Error::ElectionDataDecodeFailed)?;
-
-	for election in election_vec.iter(){
-		let rank = match election.vote_list.iter().position(|vote|vote.pub_bytes == pub_bytes){
-			Some(x) if x < MAX_VOTE_RANK =>x,
-			// None => MAX_VOTE_RANK,
-			_ => MAX_VOTE_RANK,
-		};
-		rank_vec.push(rank);
-	}
-
-	while rank_vec.len() < committee_count{
-		rank_vec.push(MAX_VOTE_RANK);
-	}
-
-	let block_election_weight = caculate_election_weight_value(&rank_vec, MAX_VOTE_RANK);
-	Ok(block_election_weight)
-
-	// if let Ok(committee_vec) = authorities(client, &BlockId::Hash(header.hash())){
-	// 	let committee_count = committee_vec.len();
-
-	// 	if let Ok(pre_digest) = find_pre_digest::<B, S>(header){
-	// 		let pub_bytes = pre_digest.pub_key_bytes;
-	// 		let mut rank_vec = vec![];
-	// 		if let Ok(election_vec) = <Vec<ElectionData<B>> as Decode>::decode(&mut pre_digest.election_bytes.as_slice()){
-	// 			for election in election_vec.iter(){
-	// 				let rank = match election.vote_list.iter().position(|vote|vote.pub_bytes == pub_bytes){
-	// 					Some(x) if x < MAX_VOTE_RANK =>x,
-	// 					// None => MAX_VOTE_RANK,
-	// 					_ => MAX_VOTE_RANK,
-	// 				};
-	// 				rank_vec.push(rank);
-	// 			}
-
-	// 			while rank_vec.len() < committee_count{
-	// 				rank_vec.push(MAX_VOTE_RANK);
-	// 			}
-
-	// 			let block_election_weight = caculate_election_weight_value(&rank_vec, MAX_VOTE_RANK);
-	// 			Ok(block_election_weight)
-	// 		}
-	// 		else{
-	// 			Err(Error::ElectionDataDecodeFailed)
-	// 		}
-	// 	}
-	// 	else{
-	// 		Err(Error::NoDigestFound)
-	// 	}
-	// }
-	// else{
-	// 	Err(Error::NoCommitteeFound)
-	// }
-}
-
 #[derive(derive_more::Display, Debug)]
 pub enum Error<B: BlockT> {
 	#[display(fmt = "Multiple Aura pre-runtime headers")]
@@ -1308,6 +1194,13 @@ pub enum Error<B: BlockT> {
 	VRFProofDecodeFailed,
 	#[display(fmt = "vrf verify failed")]
 	VRFVerifyFailed,
+	#[display(fmt = "bad predigest data")]
+	BadPredigest,
+	#[display(fmt = "bad election signature bytes")]
+	BadElectionSignatureBytes,
+	#[display(fmt = "bad election committee bytes")]
+	BadElectionCommitteeBytes,
+
 	#[display(fmt = "Header {:?} is unsealed", _0)]
 	HeaderUnsealed(B::Hash),
 	#[display(fmt = "Header {:?} has a bad seal", _0)]
@@ -1316,6 +1209,8 @@ pub enum Error<B: BlockT> {
 	// SlotAuthorNotFound,
 	#[display(fmt = "Bad signature on {:?}", _0)]
 	BadSignature(B::Hash),
+	#[display(fmt = "Election hash not match: {:?}", _0)]
+	BadElection(B::Hash),
 	Client(sp_blockchain::Error),
 	#[display(fmt = "Unknown inherent error for identifier: {}", "String::from_utf8_lossy(_0)")]
 	UnknownInherentError(sp_inherents::InherentIdentifier),
