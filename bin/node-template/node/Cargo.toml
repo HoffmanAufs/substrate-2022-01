@@ -53,6 +53,7 @@ frame-benchmarking = { version = "4.0.0-dev", path = "../../../frame/benchmarkin
 frame-benchmarking-cli = { version = "4.0.0-dev", path = "../../../utils/frame/benchmarking-cli" }
 
 node-template-runtime = { version = "3.0.0", path = "../runtime" }
+pallet-evm = {version = "6.0.0-dev", default-features = false, path = "../../../frame/evm2"}
 
 [build-dependencies]
 substrate-build-script-utils = { version = "3.0.0", path = "../../../utils/build-script-utils" }
