@@ -49,6 +49,7 @@ hex-literal = { version = "0.3.4", optional = true }
 
 pallet-template = { version = "3.0.0", default-features = false, path = "../pallets/template" }
 pallet-evm-2 = {version = "6.0.0-dev", default-features = false, path = "../../../frame/evm2"}
+pallet-evm-precompile-simple = { default-features = false, path = "../../../frame/evm2/precompile/simple" }
 
 [build-dependencies]
 substrate-wasm-builder = { version = "5.0.0-dev", path = "../../../utils/wasm-builder" }
@@ -82,6 +83,7 @@ std = [
 	"sp-std/std",
 	"sp-transaction-pool/std",
 	"sp-version/std",
+	"pallet-evm-2/std",
 ]
 runtime-benchmarks = [
 	"frame-benchmarking/runtime-benchmarks",
@@ -93,4 +95,5 @@ runtime-benchmarks = [
 	"pallet-template/runtime-benchmarks",
 	"pallet-timestamp/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
+	"pallet-evm-2/runtime-benchmarks",
 ]
