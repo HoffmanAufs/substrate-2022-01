@@ -4978,7 +4978,8 @@ dependencies = [
  "hex-literal",
  "pallet-aura",
  "pallet-balances",
- "pallet-evm-2",
+ "pallet-base-fee",
+ "pallet-evm",
  "pallet-evm-precompile-modexp",
  "pallet-evm-precompile-sha3fips",
  "pallet-evm-precompile-simple",
@@ -5511,6 +5512,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-base-fee"
+version = "1.0.0"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "pallet-evm",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+]
+
+[[package]]
 name = "pallet-beefy"
 version = "4.0.0-dev"
 dependencies = [
@@ -5761,7 +5777,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "pallet-evm-2"
+name = "pallet-evm"
 version = "6.0.0-dev"
 dependencies = [
  "evm",
